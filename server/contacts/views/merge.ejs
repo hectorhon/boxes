@@ -1,0 +1,81 @@
+<%- include('/header') %>
+
+<div style="display: grid;
+            grid-template-columns: max-content 1fr;
+            grid-gap: 0px 10px">
+  <form method="post">
+    <div class="form-fields-container">
+      <label>Primary contact</label>
+      <input id="primary-contact-id-input" name="primaryContactId" value="<%= primaryContactId %>"
+             onblur="updateVcardPreview(this, 'primary')" />
+      <label>Other contact</label>
+      <input id="other-contact-id-input" name="otherContactId" value="<%= otherContactId %>"
+             onblur="updateVcardPreview(this, 'other')" />
+    </div>
+    <p><button type="button" onclick="swapPrimaryAndOther()">Swap fields</button></p>
+    <p>
+      <button type="submit">Merge</button>
+    </p>
+  </form>
+  <table>
+    <thead>
+      <tr>
+        <th>Primary</th>
+        <th>Other</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <% if (primaryContactVcard) { %>
+          <td><pre><code id="primary-contact-vcard"><%= JSON.stringify(primaryContactVcard, 0, 2) %></code></pre></td>
+        <% } else { %>
+          <td><pre><code id="primary-contact-vcard"></code></pre></td>
+        <% } %>
+        <% if (otherContactVcard) { %>
+          <td><pre><code id="other-contact-vcard"><%= JSON.stringify(otherContactVcard, 0, 2) %></code></pre></td>
+        <% } else { %>
+          <td><pre><code id="other-contact-vcard"></code></pre></td>
+        <% } %>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+ function updateVcardPreview(el, dest) {
+   const id = el.value
+
+   let destination
+   if (dest === 'primary') {
+     destination = 'primary-contact-vcard'
+   } else if (dest === 'other') {
+     destination = 'other-contact-vcard'
+   } else {
+     console.error('Unexpected dest value')
+   }
+   const destinationEl = document.querySelector('#' + destination)
+
+   if (!id) {
+     destinationEl.innerText = ''
+   } else {
+     fetch('/api/contacts/vcard?id=' + id).then(response => {
+       response.json().then(data => {
+         destinationEl.innerText = JSON.stringify(data, 0, 2)
+       })
+     })
+   }
+ }
+
+ function swapPrimaryAndOther() {
+   const primaryEl = document.querySelector('#primary-contact-id-input')
+   const otherEl = document.querySelector('#other-contact-id-input')
+   const primaryId = primaryEl.value
+   const otherId = otherEl.value
+   primaryEl.value = otherId
+   otherEl.value = primaryId
+   updateVcardPreview(primaryEl, 'primary')
+   updateVcardPreview(otherEl, 'other')
+ }
+</script>
+
+<%- include('/footer') %>

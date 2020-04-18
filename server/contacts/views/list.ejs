@@ -1,0 +1,30 @@
+<%- include('/header') %>
+
+<p><a href="/contacts/new">New</a></p>
+
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>Sequence</th>
+      <th>Name</th>
+      <th>Group</th>
+      <th>Phone</th>
+      <th>VCard</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% contacts.forEach(contact => { %>
+      <tr id="scroll-to-id-<%= contact.id %>">
+        <td><a href="/contacts/edit?id=<%= contact.id %>">Edit</a></td>
+        <td><%= contact.id %></td>
+        <td><%= contact.name %></td>
+        <td><%= contact.group %></td>
+        <td><%= contact.phone %></td>
+        <td><%= JSON.stringify(contact.vcard) %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('/footer') %>

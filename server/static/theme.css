@@ -1,0 +1,27 @@
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th, td {
+    padding: 4px;
+}
+
+.form-fields-container {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    grid-gap: 10px;
+    padding: 10px 0px;
+    align-items: center;
+}
+
+.toolbar {
+    display: flex;
+}
+
+.toolbar-link {
+    width: 240px;
+}

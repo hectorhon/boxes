@@ -1,0 +1,22 @@
+<%- include('/header') %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Date</th>
+      <th>Sure?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% birthdays.forEach(birthday => { %>
+      <tr>
+        <td><%= birthday.name %></td>
+        <td><%= new Date(birthday.sorted_birthday).toLocaleString('default', { month: 'short', day: '2-digit' }) %></td>
+        <td><%= birthday.is_birthday_estimated ? 'no' : 'yes' %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('/footer') %>

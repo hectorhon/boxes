@@ -1,0 +1,35 @@
+<%- include('/header') %>
+
+<p><a href="/contacts">Back to list</a></p>
+
+<form method="post" autocomplete="off">
+  <div class="form-fields-container">
+    <label>Id</label>
+    <input readonly />
+    <label>Name</label>
+    <input name="name" required="true" />
+    <label>Group</label>
+    <div>
+      <select name="group">
+        <% groups.forEach(group => { %>
+          <option value="<%= group %>">
+            <%= group %>
+          </option>
+        <% }) %>
+      </select>
+      <label>New group</label>
+      <input name="newGroup" />
+    </div>
+    <label>Phone</label>
+    <input name="phone" />
+    <label>Birthday</label>
+    <input name="birthday" type="date" />
+    <label>Estimated birthday</label>
+    <input name="is_birthday_estimated" type="checkbox" />
+  </div>
+  <p>
+    <input type="submit" value="Save" />
+  </p>
+</form>
+
+<%- include('/footer') %>

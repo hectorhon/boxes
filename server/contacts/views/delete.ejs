@@ -1,0 +1,11 @@
+<%- include('/header') %>
+
+<form method="post" action="/contacts/delete">
+  <label>Are you sure you want to delete <%= contact.name %> (id: <%= contact.id %>)?</label>
+  <input type="hidden" name="id" value="<%= contact.id %>" />
+  <input type="submit" value="Delete" />
+</form>
+
+<pre style="font-size:x-large;"><code><%= JSON.stringify(contact.vcard, 0, 2) %></code></pre>
+
+<%- include('/footer') %>

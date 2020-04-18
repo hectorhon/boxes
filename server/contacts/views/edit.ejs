@@ -1,0 +1,65 @@
+<%- include('/header') %>
+
+<p><a href="/contacts#scroll-to-id-<%= contact.id %>">Back to list</a></p>
+
+<div class="toolbar">
+  <% if (prevContact) { %>
+    <a class="toolbar-link" href="/contacts/edit?id=<%= prevContact.id %>">Previous</a>
+  <% } else { %>
+    <span class="toolbar-link">Previous</span>
+  <% } %>
+  <% if (nextContact) { %>
+    <a class="toolbar-link" href="/contacts/edit?id=<%= nextContact.id %>">Next</a>
+  <% } else { %>
+    <span class="toolbar-link">Next</span>
+  <% } %>
+</div>
+
+<form method="post" autocomplete="off">
+  <div class="form-fields-container">
+    <label>Id</label>
+    <input readonly value="<%= contact.id %>" />
+    <label>Name</label>
+    <input name="name" value="<%= contact.name %>" />
+    <label>Group</label>
+    <div>
+      <select name="group">
+        <% groups.forEach(group => { %>
+          <option value="<%= group %>" <% if (contact.group === group) { %> selected="selected" <% } %>>
+            <%= group %>
+          </option>
+        <% }) %>
+      </select>
+      <label>New group</label>
+      <input name="newGroup" />
+    </div>
+    <label>Phone</label>
+    <input name="phone" value="<%= contact.phone %>" />
+    <label>Birthday</label>
+    <input name="birthday" type="date"
+           <% if (contact.birthday) { %>
+           value="<%= contact.birthday %>"
+           <% } %> />
+    <label>Estimated birthday</label>
+    <input name="is_birthday_estimated" type="checkbox"
+           <% if (contact.is_birthday_estimated) { %>
+           checked="checked"
+           <% } %> />
+    <% if (nextContact) { %>
+      <input type="hidden" name="nextId" value="<%= nextContact.id %>" />
+    <% } %>
+  </div>
+  <p>
+    <input type="submit" value="Save" />
+    <% if (nextContact) { %>
+      <input type="submit" name="saveAndNext" value="Save and next" />
+    <% } %>
+    <a href="/contacts/merge?other=<%= contact.id %>">Merge to...</a>
+    <a href="/contacts/delete?id=<%= contact.id %>">Delete</a>
+    Last updated: <%= contact.last_updated %>
+  </p>
+</form>
+
+<pre style="font-size:x-large;"><code><%= JSON.stringify(contact.vcard, 0, 2) %></code></pre>
+
+<%- include('/footer') %>
