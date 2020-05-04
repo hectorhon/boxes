@@ -1,3 +1,6 @@
     <p>Footer</p>
+    <% (typeof scripts === 'object') && scripts.forEach(script => { %>
+      <script src="/<%= script %>"></script>
+    <% }) %>
   </body>
 </html>
