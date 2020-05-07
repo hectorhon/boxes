@@ -1,0 +1,17 @@
+<%- include('/header') %>
+
+<p><a href="/filestore">Back to list</a></p>
+
+<form method="post" autocomplete="off">
+  <div class="form-fields-container">
+    <label>Path</label>
+    <input name="path" required="true" />
+    <label>Name</label>
+    <input name="name" />
+  </div>
+  <p>
+    <input type="submit" value="Save" />
+  </p>
+</form>
+
+<%- include('/footer') %>

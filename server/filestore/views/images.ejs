@@ -1,0 +1,9 @@
+<%- include('/header') %>
+
+<div class="image-gallery">
+  <% images.map(image => { %>
+      <img src="/filestore<%= image.path %>" />
+  <% }) %>
+</div>
+
+<%- include('/footer') %>

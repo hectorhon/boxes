@@ -9,7 +9,7 @@ const db = require('../db')
 // meta jsonb,
 // last_updated timestamp with time zone,
 // birthday date,
-// is_birthday_estimated bool,
+// is_birthday_estimated bool
 // )
 
 async function list() {
