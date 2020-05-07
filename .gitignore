@@ -4,3 +4,9 @@ dist
 vcf/bin
 vcf/lib
 vcf/pyvenv.cfg
+
+indexPhotos/bin
+indexPhotos/lib
+indexPhotos/pyvenv.cfg
+
+data
