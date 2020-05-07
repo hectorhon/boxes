@@ -1,0 +1,24 @@
+<%- include('/header') %>
+
+<p><a href="/filestore/newEntry">New</a></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Path</th>
+      <th>Added on</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% fileEntries.forEach(entry => { %>
+      <tr>
+        <td><%= entry.name %></td>
+        <td><a href="/filestore<%= entry.path %>"><%= entry.path %></a></td>
+        <td><%= entry.add_date %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<%- include('/footer') %>

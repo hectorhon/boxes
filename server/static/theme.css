@@ -18,10 +18,21 @@ th, td {
     align-items: center;
 }
 
-.toolbar {
+.form-toolbar {
     display: flex;
 }
 
-.toolbar-link {
+.form-toolbar-link {
     width: 240px;
+}
+
+.image-gallery {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+}
+
+.image-gallery img {
+    max-width: 100%;
+    max-height: 100%;
 }

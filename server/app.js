@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 
 const contactsRouter = require('./contacts/routes')
 const widgetsRouter = require('./widgets/routes')
+const filestoreRouter = require('./filestore/routes')
 
 const app = express()
 const port = 3000
@@ -26,6 +27,9 @@ app.get('/', (req, res) => {
 
 app.use(contactsRouter)
 app.use(widgetsRouter)
+app.use(filestoreRouter)
+
+app.use('/filestore', express.static('../data/filestore'))
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
