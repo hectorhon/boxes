@@ -1,18 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
 
-function getData(dataSource, pageSize = 10, pageNumber = 1) {
-  if (typeof dataSource === 'function') {
-    return dataSource(pageSize, pageNumber)
-  } else if (typeof dataSource === 'object') {
+async function getData(dataSource, searchText, pageSize = 10, pageNumber = 1) {
+  // if (typeof dataSource === 'function') {
+  //   return dataSource(pageSize, pageNumber)
+  // } else
+  if (Array.isArray(dataSource)) {
+    const searchTokens = searchText.split(' ')
+      .filter(token => token.length > 0)
+      .map(token => token.toLowerCase())
+    const filteredRows = searchTokens.length === 0 ? dataSource : dataSource.filter(row => {
+      const values = Object.keys(row)
+        .filter(key => key !== 'id')
+        .map(key => row[key])
+      return searchTokens.every(token => {
+        return values.some(value => {
+          return value.toString().toLowerCase().indexOf(token) >= 0
+        })
+      })
+    })
     return {
-      rows: dataSource.slice(
+      rows: filteredRows.slice(
         (pageNumber - 1) * pageSize,
         (pageNumber - 1) * pageSize + pageSize
       ),
-      length: dataSource.length,
+      length: filteredRows.length,
     }
   } else {
-    console.error('Unexpected or missing prop value for "dataSource"')
+    console.error('Unsupported or missing prop value for "dataSource"')
     return []
   }
 }
@@ -20,24 +34,46 @@ function getData(dataSource, pageSize = 10, pageNumber = 1) {
 function Table(props) {
   const { columns, dataSource } = props
 
+  const [data, setData] = useState({
+    rows: [],
+    length: 0,
+  })
   const [pageSize, setPageSize] = useState(3)
   const [pageNumber, setPageNumber] = useState(1)
-
-  const { rows, length } = getData(dataSource, pageSize, pageNumber)
-
-  const totalPages = Math.max(1, Math.ceil(length / pageSize))
+  const [totalPages, setTotalPages] = useState(1)
+  const [searchText, setSearchText] = useState('')
 
   const [tableMinHeight, setTableMinHeight] = useState(0)
   const tableWrapperRef = useRef()
 
   useEffect(() => {
-    const renderedHeight = tableWrapperRef.current.offsetHeight
-    console.log(`Setting table min height to ${renderedHeight}`)
-    setTableMinHeight(renderedHeight)
-  }, [])
+    async function f() {
+      const d = await getData(dataSource, searchText, pageSize, pageNumber)
+      setData(d)
+      setTotalPages(Math.max(1, Math.ceil(d.length / pageSize)))
+      if (tableMinHeight === 0) {
+        const renderedHeight = tableWrapperRef.current.offsetHeight
+        setTableMinHeight(renderedHeight)
+      }
+    }
+    f()
+  }, [pageSize, pageNumber, searchText])
 
   return (
     <div>
+      <p>
+        <input type='text'
+               placeholder='Search...'
+               value={searchText}
+               onChange={event => {
+                 setPageNumber(1)
+                 setSearchText(event.target.value)
+               }} />
+        <button type='button' onClick={() => {
+          setPageNumber(1)
+          setSearchText('')
+        }}>Clear</button>
+      </p>
       <div ref={tableWrapperRef} style={{ minHeight: tableMinHeight }}>
         <table>
           <thead>
@@ -47,7 +83,7 @@ function Table(props) {
           </thead>
           <tbody>
             {
-              rows.map(row => (
+              data.rows.map(row => (
                 <tr key={row.id}>
                   {
                     columns.map(column => (
@@ -61,12 +97,14 @@ function Table(props) {
         </table>
       </div>
       <p>
-        <button disabled={pageNumber === 1}
+        <button type='button'
+                disabled={pageNumber === 1}
                 onClick={() => setPageNumber(pageNumber - 1)}>
           Prev
         </button>
         Page {pageNumber} of {totalPages}
-        <button disabled={pageNumber === totalPages}
+        <button type='button'
+                disabled={pageNumber === totalPages}
                 onClick={() => setPageNumber(pageNumber + 1)}>
           Next
         </button>
