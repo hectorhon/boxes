@@ -14,7 +14,19 @@ router.get('/widgets/react-hello-world', (req, res) => {
     scripts: [
       'vendor/react/react.development.js',
       'vendor/react/react-dom.development.js',
-      'scripts/widgets/react-hello-world.js'
+      'widgets/react-hello-world.js',
+    ],
+  })
+})
+
+router.get('/widgets/table', (req, res) => {
+  res.render('widgets/views/table', {
+    title: 'Widgets - Table',
+    scripts: [
+      'vendor/react/react.development.js',
+      'vendor/react/react-dom.development.js',
+      'dist/Table.js',
+      'widgets/table-example.js',
     ],
   })
 })
