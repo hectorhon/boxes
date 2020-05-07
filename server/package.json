@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "start": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "hectorhon",
@@ -15,9 +16,16 @@
     "uuid": "^7.0.3"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-react": "^7.9.4",
+    "babel-loader": "^8.1.0",
     "eslint": "^6.8.0",
     "nodemon": "^2.0.3",
     "typescript": "^3.8.3",
-    "typescript-language-server": "^0.4.0"
+    "typescript-language-server": "^0.4.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   }
 }
