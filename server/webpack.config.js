@@ -2,6 +2,7 @@ module.exports = {
   mode: 'development',
   entry: {
     'Table': './widgets/frontend/table/table.jsx',
+    'ImageGallery': './widgets/frontend/image-gallery/image-gallery.jsx',
   },
   output: {
     filename: '[name].js',

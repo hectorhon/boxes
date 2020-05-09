@@ -8,7 +8,7 @@ router.get('/widgets', (req, res) => {
   })
 })
 
-router.get('/widgets/react-hello-world', (req, res) => {
+router.get('/widgets/react-hello-world', (_, res) => {
   res.render('widgets/views/react-hello-world', {
     title: 'Widgets - React Hello World',
     scripts: [
@@ -19,7 +19,7 @@ router.get('/widgets/react-hello-world', (req, res) => {
   })
 })
 
-router.get('/widgets/table', (req, res) => {
+router.get('/widgets/table', (_, res) => {
   res.render('widgets/views/table', {
     title: 'Widgets - Table',
     scripts: [
@@ -27,6 +27,18 @@ router.get('/widgets/table', (req, res) => {
       'vendor/react/react-dom.development.js',
       'dist/Table.js',
       'widgets/table-example.js',
+    ],
+  })
+})
+
+router.get('/widgets/image-gallery', (_, res) => {
+  res.render('widgets/views/image-gallery', {
+    title: 'Widgets - Image gallery',
+    scripts: [
+      'vendor/react/react.development.js',
+      'vendor/react/react-dom.development.js',
+      'dist/ImageGallery.js',
+      'widgets/image-gallery-example.js',
     ],
   })
 })
