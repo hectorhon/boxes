@@ -1,5 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const sassMiddleware = require('node-sass-middleware')
+const path = require('path')
 
 const contactsRouter = require('./contacts/routes')
 const widgetsRouter = require('./widgets/routes')
@@ -8,7 +10,18 @@ const filestoreRouter = require('./filestore/routes')
 const app = express()
 const port = 3000
 
-app.use(express.static('static'))
+// https://www.w3.org/2005/10/howto-favicon recommends <link> tag
+// but does not work for direct fetches e.g. /filestore/sample/image.jpg
+app.get('/favicon.ico', (_, res) => {
+  res.sendFile(path.join(__dirname, 'static') + '/favicon.ico')
+})
+
+app.use(sassMiddleware({
+  src: path.join(__dirname, 'static'),
+  prefix: '/static',
+}))
+
+app.use('/static', express.static('static'))
 
 app.set('view engine', 'ejs')
 app.set('views', '.')
