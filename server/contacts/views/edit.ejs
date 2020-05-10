@@ -3,16 +3,8 @@
 <p><a href="/contacts#scroll-to-id-<%= contact.id %>">Back to list</a></p>
 
 <div class="form-toolbar">
-  <% if (prevContact) { %>
-    <a class="form-toolbar-link" href="/contacts/edit?id=<%= prevContact.id %>">Previous</a>
-  <% } else { %>
-    <span class="form-toolbar-link">Previous</span>
-  <% } %>
-  <% if (nextContact) { %>
-    <a class="form-toolbar-link" href="/contacts/edit?id=<%= nextContact.id %>">Next</a>
-  <% } else { %>
-    <span class="form-toolbar-link">Next</span>
-  <% } %>
+  <a <% if (prevContact) { %>href="/contacts/edit?id=<%= prevContact.id %>"<% } %>>Previous</a>
+  <a <% if (nextContact) { %>href="/contacts/edit?id=<%= nextContact.id %>"<% } %>>Next</a>
 </div>
 
 <form method="post" autocomplete="off">
