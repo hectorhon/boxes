@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 
 async function getData(dataSource, searchText, pageSize = 10, pageNumber = 1) {
-  // if (typeof dataSource === 'function') {
-  //   return dataSource(pageSize, pageNumber)
-  // } else
-  if (Array.isArray(dataSource)) {
+  if (typeof dataSource === 'function') {
+    return await dataSource(searchText, pageSize, pageNumber)
+  } else if (Array.isArray(dataSource)) {
     const searchTokens = searchText.split(' ')
       .filter(token => token.length > 0)
       .map(token => token.toLowerCase())
@@ -71,6 +70,8 @@ function ImageGallery(props) {
         {
           data.images.map(image => (
             <img key={image.id}
+                 title={image.name}
+                 alt={image.name}
                  src={rootPath + image.path} />
           ))
         }

@@ -16,7 +16,7 @@ function wrap(asyncFunction) {
   })
 }
 
-router.get('/filestore', wrap(async (req, res) => {
+router.get('/filestore', wrap(async (_, res) => {
   const fileEntries = await repo.list()
   res.render('filestore/views/list', {
     title: 'Files',
@@ -24,7 +24,7 @@ router.get('/filestore', wrap(async (req, res) => {
   })
 }))
 
-router.get('/filestore/newEntry', wrap(async (req, res) => {
+router.get('/filestore/newEntry', wrap(async (_, res) => {
   res.render('filestore/views/newEntry', {
     title: 'Files - New entry',
   })
@@ -39,11 +39,25 @@ router.post('/filestore/newEntry', wrap(async (req, res) => {
   res.redirect('/filestore')
 }))
 
-router.get('/filestore/images', wrap(async (req, res) => {
-  const images = await repo.listImages()
+router.get('/filestore/images', wrap(async (_, res) => {
   res.render('filestore/views/images', {
     title: 'Images',
+    scripts: [
+      'vendor/react/react.development.js',
+      'vendor/react/react-dom.development.js',
+      'dist/ImageGallery.js',
+      'filestore/images.js',
+    ]
+  })
+}))
+
+router.get('/api/filestore/images', wrap(async (req, res) => {
+  const { searchText, pageSize, pageNumber } = req.query
+  const images = await repo.searchImages(searchText, pageSize, pageNumber)
+  const count = await repo.getImageCount(searchText)
+  res.json({
     images,
+    length: count
   })
 }))
 
