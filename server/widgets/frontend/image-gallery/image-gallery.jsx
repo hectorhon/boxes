@@ -69,10 +69,12 @@ function ImageGallery(props) {
       <div className='image-gallery'>
         {
           data.images.map(image => (
-            <img key={image.id}
-                 title={image.name}
-                 alt={image.name}
-                 src={rootPath + image.path} />
+            <div className="img-container">
+              <img key={image.id}
+                   title={image.name}
+                   alt={image.name}
+                   src={rootPath + image.path} />
+            </div>
           ))
         }
       </div>
