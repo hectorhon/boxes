@@ -39,6 +39,19 @@ router.post('/filestore/newEntry', wrap(async (req, res) => {
   res.redirect('/filestore')
 }))
 
+router.post('/api/filestore/newEntry', wrap(async (req, res) => {
+  const { batch } = req.query
+  const { name, path, mimeType, entryDate } = req.body
+  repo.insert({
+    name,
+    path,
+    mimeType,
+    entryDate,
+    meta: { batch }
+  })
+  res.status(200).end()
+}))
+
 router.get('/filestore/images', wrap(async (_, res) => {
   res.render('filestore/views/images', {
     title: 'Images',

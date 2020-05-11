@@ -99,7 +99,7 @@ router.post('/contacts/new', wrap (async (req, res) => {
   res.redirect('/contacts')
 }))
 
-router.post('/contacts/newVcard', wrap(async (req, res) => {
+router.post('/api/contacts/newVcard', wrap(async (req, res) => {
   const { batch } = req.query
   if (!batch) {
     res.status(400).send('Missing "batch" query string parameter')

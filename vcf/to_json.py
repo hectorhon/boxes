@@ -59,7 +59,7 @@ with open(path, 'r') as f:
       entries.append(entry)
 
       try:
-        url = 'http://localhost:3000/contacts/newVcard?batch=initial'
+        url = 'http://localhost:3000/api/contacts/newVcard?batch=initial'
         response = requests.post(url, entry)
         response.raise_for_status()
       except requests.exceptions.RequestException:
