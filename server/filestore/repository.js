@@ -6,7 +6,9 @@ const db = require('../db')
   name varchar,
   path varchar,
   add_date timestamp with time zone,
-  mime_type varchar
+  mime_type varchar,
+  entry_date timestamp with time zone,
+  meta jsonb
   )
 */
 
@@ -19,12 +21,12 @@ async function list() {
 }
 
 async function insert(fileEntry) {
-  const { name, path } = fileEntry
+  const { name, path, mimeType, entry_date, meta } = fileEntry
   await db.query(
     'insert into boxes_filestore ' +
-      '(name, path, add_date) ' +
-      'values ($1, $2, $3)',
-    [name, path, new Date()]
+      '(name, path, add_date, mime_type, entry_date, meta) ' +
+      'values ($1, $2, $3, $4, $5, $6)',
+    [name, path, new Date(), mimeType, entry_date, meta]
   )
 }
 

@@ -37,7 +37,7 @@ function ImageGallery(props) {
     images: [],
     length: 0,
   })
-  const [pageSize, setPageSize] = useState(3)
+  const [pageSize, setPageSize] = useState(8) // TODO: dynamically set page size based on css grid?
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchText, setSearchText] = useState('')
