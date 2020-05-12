@@ -25,7 +25,7 @@ def try_parse_image_date_from_file(fullpath):
 class File:
     def __init__(self, fullpath, guessed_mime_type):
         # self.id = uuid.uuid4()
-        self.name = os.path.basename(fullpath)
+        self.title = os.path.basename(fullpath)
         self.fullpath = fullpath
         self.mime_type = guessed_mime_type
         self.image_date = try_parse_image_date_from_file(fullpath)
@@ -95,7 +95,7 @@ pp = pprint.PrettyPrinter(indent=4)
 
 def post_to_server(file, path_prefix, batch_name):
     json = {
-        'name': file.name,
+        'title': file.title,
         'path': file.fullpath[len(path_prefix):],
         'mimeType': file.mime_type,
         'entryDate': file.image_date,
