@@ -31,9 +31,9 @@ router.get('/filestore/newEntry', wrap(async (_, res) => {
 }))
 
 router.post('/filestore/newEntry', wrap(async (req, res) => {
-  const { name, path } = req.body
+  const { title, path } = req.body
   await repo.insert({
-    name,
+    title,
     path,
   })
   res.redirect('/filestore')
@@ -41,9 +41,9 @@ router.post('/filestore/newEntry', wrap(async (req, res) => {
 
 router.post('/api/filestore/newEntry', wrap(async (req, res) => {
   const { batch } = req.query
-  const { name, path, mimeType, entryDate } = req.body
+  const { title, path, mimeType, entryDate } = req.body
   repo.insert({
-    name,
+    title,
     path,
     mimeType,
     entryDate,
