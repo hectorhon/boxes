@@ -72,7 +72,7 @@ function ImageGallery(props) {
             <div key={image.id} className="img-container">
               <img title={image.name}
                    alt={image.name}
-                   src={rootPath + image.path} />
+                   src={rootPath + image.thumbnail_path} />
             </div>
           ))
         }

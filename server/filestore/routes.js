@@ -33,10 +33,10 @@ router.get('/filestore/newEntry', wrap(async (_, res) => {
 
 router.post('/filestore/newEntry', wrap(async (req, res) => {
   const { title, path } = req.body
-  await repo.insert({
+  await service.insert(
     title,
     path,
-  })
+  )
   res.redirect('/filestore')
 }))
 

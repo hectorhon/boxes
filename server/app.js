@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const sassMiddleware = require('node-sass-middleware')
 const path = require('path')
 
+const config = require('./config')
 const contactsRouter = require('./contacts/routes')
 const widgetsRouter = require('./widgets/routes')
 const filestoreRouter = require('./filestore/routes')
@@ -42,7 +43,8 @@ app.use(contactsRouter)
 app.use(widgetsRouter)
 app.use(filestoreRouter)
 
-app.use('/filestore', express.static('../data/filestore'))
+app.use('/filestore', express.static(config.FILESTORE_PATH))
+app.use('/thumbnails', express.static(config.THUMBNAILS_PATH))
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
