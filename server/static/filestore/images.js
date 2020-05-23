@@ -10,7 +10,7 @@ const domContainer = document.querySelector('#image-gallery-container');
 ReactDOM.render(
   React.createElement(ImageGallery.default, {
     dataSource: searchImages,
-    rootPath: '/filestore',
+    rootPath: '/thumbnails',
   }),
   domContainer
 )
