@@ -37,7 +37,7 @@ function ImageGallery(props) {
     images: [],
     length: 0,
   })
-  const [pageSize, setPageSize] = useState(8) // TODO: dynamically set page size based on css grid?
+  const [pageSize, setPageSize] = useState(10)
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchText, setSearchText] = useState('')
@@ -69,9 +69,8 @@ function ImageGallery(props) {
       <div className='image-gallery'>
         {
           data.images.map(image => (
-            <div className="img-container">
-              <img key={image.id}
-                   title={image.name}
+            <div key={image.id} className="img-container">
+              <img title={image.name}
                    alt={image.name}
                    src={rootPath + image.path} />
             </div>
