@@ -97,7 +97,7 @@ def post_to_server(file, path_prefix, batch_name):
     json = {
         'title': file.title,
         'path': file.fullpath[len(path_prefix):],
-        'mimeType': file.mime_type,
+        # 'mimeType': file.mime_type,
         'entryDate': file.image_date,
     }
     pp.pprint(json)
