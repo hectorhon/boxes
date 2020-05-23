@@ -42,6 +42,7 @@ async function searchImages(searchText = '', pageSize = 10, pageNumber = 1) {
   const query = 'select id, title, path, add_date from boxes_filestore ' +
     "where mime_type like 'image/%' " +
     'and (title ilike $1) ' +
+    'order by add_date ' +
     'limit $2 offset $3'
   const result = await db.query(
     query,

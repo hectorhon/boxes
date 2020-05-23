@@ -1,6 +1,7 @@
 const express = require('express')
 
 const repo = require('./repository')
+const service = require('./service')
 
 const router = express.Router()
 
@@ -42,13 +43,13 @@ router.post('/filestore/newEntry', wrap(async (req, res) => {
 router.post('/api/filestore/newEntry', wrap(async (req, res) => {
   const { batch } = req.query
   const { title, path, mimeType, entryDate } = req.body
-  repo.insert({
+  service.insert(
     title,
     path,
     mimeType,
     entryDate,
-    meta: { batch }
-  })
+    { batch },
+  )
   res.status(200).end()
 }))
 
