@@ -9,9 +9,9 @@ function wrap(asyncFunction) {
   return ((req, res) => {
     asyncFunction(req, res).catch(err => {
       if (process.env.NODE_ENV) {
-        res.status(500)
+        res.status(500).end()
       } else {
-        res.status(500).send(err)
+        res.status(500).send(err.toString())
       }
     })
   })
