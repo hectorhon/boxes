@@ -4,7 +4,7 @@ const sassMiddleware = require('node-sass-middleware')
 const path = require('path')
 
 const config = require('./config')
-const contactsRouter = require('./contacts/routes')
+const contactsRouter = require('./routes/contacts')
 const widgetsRouter = require('./widgets/routes')
 const filestoreRouter = require('./filestore/routes')
 
@@ -25,9 +25,9 @@ app.use(sassMiddleware({
 app.use('/static', express.static('static'))
 
 app.set('view engine', 'ejs')
-app.set('views', '.')
+app.set('views', 'views')
 app.set('view options', {
-  root: __dirname
+  root: path.join(__dirname, 'views')
 })
 
 app.use(bodyParser.urlencoded({ extended: false }))
