@@ -5,7 +5,7 @@ const path = require('path')
 
 const config = require('./config')
 const contactsRouter = require('./routes/contacts')
-const widgetsRouter = require('./widgets/routes')
+const widgetsRouter = require('./routes/widgets')
 const filestoreRouter = require('./filestore/routes')
 
 const app = express()
