@@ -2,14 +2,14 @@ const express = require('express')
 
 const router = express.Router()
 
-router.get('/widgets', (req, res) => {
-  res.render('widgets/views/index', {
+router.get('/widgets', (_, res) => {
+  res.render('widgets/index', {
     title: 'Widgets',
   })
 })
 
 router.get('/widgets/react-hello-world', (_, res) => {
-  res.render('widgets/views/react-hello-world', {
+  res.render('widgets/react-hello-world', {
     title: 'Widgets - React Hello World',
     scripts: [
       'vendor/react/react.development.js',
@@ -20,7 +20,7 @@ router.get('/widgets/react-hello-world', (_, res) => {
 })
 
 router.get('/widgets/table', (_, res) => {
-  res.render('widgets/views/table', {
+  res.render('widgets/table', {
     title: 'Widgets - Table',
     scripts: [
       'vendor/react/react.development.js',
@@ -32,7 +32,7 @@ router.get('/widgets/table', (_, res) => {
 })
 
 router.get('/widgets/image-gallery', (_, res) => {
-  res.render('widgets/views/image-gallery', {
+  res.render('widgets/image-gallery', {
     title: 'Widgets - Image gallery',
     scripts: [
       'vendor/react/react.development.js',
