@@ -1,6 +1,6 @@
 const express = require('express')
 
-const repo = require('./repository')
+const contacts = require('../domain/contacts')
 
 const router = express.Router()
 
@@ -28,26 +28,26 @@ function wrap(asyncFunction) {
   })
 }
 
-router.get('/contacts', wrap(async (req, res) => {
-  const contacts = await repo.list()
-  contacts.forEach(contact => removePhotoFromVcard(contact.vcard))
-  res.render('contacts/views/list', {
+router.get('/contacts', wrap(async (_, res) => {
+  const list = await contacts.list()
+  list.forEach(contact => removePhotoFromVcard(contact.vcard))
+  res.render('contacts/list', {
     title: 'Contacts',
-    contacts,
+    contacts: list,
   })
 }))
 
 router.get('/contacts/edit', wrap(async (req, res) => {
   const { id } = req.query
-  const contact = await repo.getById(id)
+  const contact = await contacts.get(id)
   if (!contact) {
     res.status(404).send('Contact not found')
     return
   }
-  const nextContact = await repo.getNextById(id)
-  const prevContact = await repo.getPrevById(id)
-  const groups = await repo.getGroups()
-  res.render('contacts/views/edit', {
+  const nextContact = await contacts.getNextContact(id)
+  const prevContact = await contacts.getPreviousContact(id)
+  const groups = await contacts.getAllGroups()
+  res.render('contacts/edit', {
     title: 'Contacts - Edit',
     contact,
     nextContact,
@@ -63,7 +63,7 @@ router.post('/contacts/edit', wrap(async (req, res) => {
     birthday, is_birthday_estimated,
     nextId, saveAndNext
   } = req.body
-  await repo.updateById(id, {
+  await contacts.edit(id, {
     name,
     group: group || (newGroup ? newGroup : null),
     phone,
@@ -78,8 +78,8 @@ router.post('/contacts/edit', wrap(async (req, res) => {
 }))
 
 router.get('/contacts/new', wrap (async (req, res) => {
-  const groups = await repo.getGroups()
-  res.render('contacts/views/new', {
+  const groups = await contacts.getAllGroups()
+  res.render('contacts/new', {
     title: 'Contacts - New',
     groups,
   })
@@ -89,7 +89,7 @@ router.post('/contacts/new', wrap (async (req, res) => {
   const {
     name, group, newGroup, phone, birthday, is_birthday_estimated
   } = req.body
-  await repo.insert({
+  await contacts.add({
     name,
     group: group || (newGroup ? newGroup : null),
     phone,
@@ -106,7 +106,7 @@ router.post('/api/contacts/newVcard', wrap(async (req, res) => {
     return
   }
   const vcardJson = req.body
-  await repo.insertViaVcard(vcardJson, batch)
+  await contacts.importVCard(vcardJson, batch)
   res.status(200).end()
 }))
 
@@ -114,14 +114,14 @@ router.get('/contacts/merge', wrap(async (req, res) => {
   const { primary: primaryContactId, other: otherContactId } = req.query
   let primaryContactVcard, otherContactVcard
   if (primaryContactId) {
-    primaryContactVcard = await repo.getVcard(primaryContactId)
+    primaryContactVcard = await contacts.getVCard(primaryContactId)
     removePhotoFromVcard(primaryContactVcard)
   }
   if (otherContactId) {
-    otherContactVcard = await repo.getVcard(otherContactId)
+    otherContactVcard = await contacts.getVCard(otherContactId)
     removePhotoFromVcard(otherContactVcard)
   }
-  res.render('contacts/views/merge', {
+  res.render('contacts/merge', {
     title: 'Contacts - Merge vcard',
     primaryContactId,
     otherContactId,
@@ -132,18 +132,18 @@ router.get('/contacts/merge', wrap(async (req, res) => {
 
 router.post('/contacts/merge', wrap(async (req, res) => {
   const { primaryContactId, otherContactId } = req.body
-  await repo.merge(primaryContactId, otherContactId)
+  await contacts.merge(primaryContactId, otherContactId)
   res.redirect(`/contacts/edit?id=${primaryContactId}`)
 }))
 
 router.get('/contacts/delete', wrap(async (req, res) => {
   const { id } = req.query
-  const contact = await repo.getById(id)
+  const contact = await contacts.get(id)
   if (!contact) {
     res.status(404).send('Contact not found')
     return
   }
-  res.render('contacts/views/delete', {
+  res.render('contacts/delete', {
     title: 'Contacts - Delete',
     contact,
   })
@@ -151,21 +151,25 @@ router.get('/contacts/delete', wrap(async (req, res) => {
 
 router.post('/contacts/delete', wrap(async (req, res) => {
   const { id } = req.body
-  const prevContact = await repo.getPrevById(id)
-  await repo.remove(id)
-  res.redirect(`/contacts/edit?id=${prevContact.id}`)
+  const prevContact = await contacts.getPreviousContact(id)
+  await contacts.remove(id)
+  if (prevContact) {
+    res.redirect(`/contacts/edit?id=${prevContact.id}`)
+  } else {
+    res.redirect('/contacts')
+  }
 }))
 
 router.get('/api/contacts/vcard', wrap(async (req, res) => {
   const { id } = req.query
-  const vcard = await repo.getVcard(id)
+  const vcard = await contacts.getVCard(id)
   removePhotoFromVcard(vcard)
   res.json(vcard)
 }))
 
 router.get('/contacts/birthdays', wrap(async (req, res) => {
-  const birthdays = await repo.getBirthdays()
-  res.render('contacts/views/birthdays', {
+  const birthdays = await contacts.getBirthdays()
+  res.render('contacts/birthdays', {
     title: 'Birthdays',
     birthdays,
   })
