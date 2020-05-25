@@ -1,3 +1,4 @@
+const http = require('http')
 const express = require('express')
 const bodyParser = require('body-parser')
 const sassMiddleware = require('node-sass-middleware')
@@ -7,6 +8,7 @@ const config = require('./config')
 const contactsRouter = require('./routes/contacts')
 const widgetsRouter = require('./routes/widgets')
 const filestoreRouter = require('./routes/filestore')
+const chatRouter = require('./routes/chat')
 
 const app = express()
 const port = 3000
@@ -46,6 +48,9 @@ app.use(filestoreRouter)
 app.use('/filestore', express.static(config.FILESTORE_PATH))
 app.use('/thumbnails', express.static(config.THUMBNAILS_PATH))
 
-app.listen(port, () => {
+const server = http.createServer(app)
+app.use(chatRouter(server))
+
+server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
