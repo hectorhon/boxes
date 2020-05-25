@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 
-async function getData(dataSource, searchText, pageSize = 10, pageNumber = 1) {
+async function getData(dataSource, query, pageSize = 10, pageNumber = 1) {
   if (typeof dataSource === 'function') {
-    return await dataSource(searchText, pageSize, pageNumber)
+    return await dataSource(query, pageSize, pageNumber)
   } else if (Array.isArray(dataSource)) {
-    const searchTokens = searchText.split(' ')
+    const searchTokens = query.split(' ')
       .filter(token => token.length > 0)
       .map(token => token.toLowerCase())
     const filteredImages = searchTokens.length === 0 ? dataSource : dataSource.filter(image => {
@@ -22,7 +22,7 @@ async function getData(dataSource, searchText, pageSize = 10, pageNumber = 1) {
         (pageNumber - 1) * pageSize,
         (pageNumber - 1) * pageSize + pageSize
       ),
-      length: filteredImages.length,
+      total: filteredImages.length,
     }
   } else {
     console.error('Unsupported or missing prop value for "dataSource"')
@@ -35,35 +35,35 @@ function ImageGallery(props) {
 
   const [data, setData] = useState({
     images: [],
-    length: 0,
+    total: 0,
   })
   const [pageSize, setPageSize] = useState(10)
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [searchText, setSearchText] = useState('')
+  const [query, setQuery] = useState('')
 
   useEffect(() => {
     async function f() {
-      const d = await getData(dataSource, searchText, pageSize, pageNumber)
+      const d = await getData(dataSource, query, pageSize, pageNumber)
       setData(d)
-      setTotalPages(Math.max(1, Math.ceil(d.length / pageSize)))
+      setTotalPages(Math.max(1, Math.ceil(d.total / pageSize)))
     }
     f()
-  }, [pageSize, pageNumber, searchText])
+  }, [pageSize, pageNumber, query])
 
   return (
     <div>
       <p>
         <input type='text'
                placeholder='Search...'
-               value={searchText}
+               value={query}
                onChange={event => {
                  setPageNumber(1)
-                 setSearchText(event.target.value)
+                 setQuery(event.target.value)
                }} />
         <button type='button' onClick={() => {
           setPageNumber(1)
-          setSearchText('')
+          setQuery('')
         }}>Clear</button>
       </p>
       <div className='image-gallery'>

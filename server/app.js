@@ -6,7 +6,7 @@ const path = require('path')
 const config = require('./config')
 const contactsRouter = require('./routes/contacts')
 const widgetsRouter = require('./routes/widgets')
-const filestoreRouter = require('./filestore/routes')
+const filestoreRouter = require('./routes/filestore')
 
 const app = express()
 const port = 3000

@@ -1,7 +1,6 @@
 const express = require('express')
 
-const repo = require('./repository')
-const service = require('./service')
+const filestore = require('../service/filestore')
 
 const router = express.Router()
 
@@ -18,43 +17,43 @@ function wrap(asyncFunction) {
 }
 
 router.get('/filestore', wrap(async (_, res) => {
-  const fileEntries = await repo.list()
-  res.render('filestore/views/list', {
+  const fileEntries = await filestore.list()
+  res.render('filestore/list', {
     title: 'Files',
     fileEntries,
   })
 }))
 
 router.get('/filestore/newEntry', wrap(async (_, res) => {
-  res.render('filestore/views/newEntry', {
+  res.render('filestore/newEntry', {
     title: 'Files - New entry',
   })
 }))
 
 router.post('/filestore/newEntry', wrap(async (req, res) => {
   const { title, path } = req.body
-  await service.insert(
+  await filestore.add({
     title,
     path,
-  )
+  })
   res.redirect('/filestore')
 }))
 
 router.post('/api/filestore/newEntry', wrap(async (req, res) => {
   const { batch } = req.query
   const { title, path, mimeType, entryDate } = req.body
-  service.insert(
+  await filestore.add({
     title,
     path,
     mimeType,
     entryDate,
-    { batch },
-  )
+    meta: { batch },
+  })
   res.status(200).end()
 }))
 
 router.get('/filestore/images', wrap(async (_, res) => {
-  res.render('filestore/views/images', {
+  res.render('filestore/images', {
     title: 'Images',
     scripts: [
       'vendor/react/react.development.js',
@@ -66,13 +65,9 @@ router.get('/filestore/images', wrap(async (_, res) => {
 }))
 
 router.get('/api/filestore/images', wrap(async (req, res) => {
-  const { searchText, pageSize, pageNumber } = req.query
-  const images = await repo.searchImages(searchText, pageSize, pageNumber)
-  const count = await repo.getImageCount(searchText)
-  res.json({
-    images,
-    length: count
-  })
+  const { query, pageSize, pageNumber } = req.query
+  const searchResult = await filestore.searchImages(query, pageSize, pageNumber)
+  res.json(searchResult)
 }))
 
 module.exports = router
