@@ -66,6 +66,8 @@ with open(path, 'r') as f:
         print(response.text)
         raise
 
+      break
+
   except MyException:
     print('done')
 

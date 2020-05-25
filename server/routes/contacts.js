@@ -1,6 +1,6 @@
 const express = require('express')
 
-const contacts = require('../domain/contacts')
+const contacts = require('../service/contacts')
 
 const router = express.Router()
 

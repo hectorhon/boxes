@@ -1,6 +1,6 @@
-async function searchImages(searchText, pageSize, pageNumber) {
+async function searchImages(query, pageSize, pageNumber) {
   const params = new URLSearchParams({
-    searchText, pageSize, pageNumber
+    query, pageSize, pageNumber
   }).toString()
   return fetch('/api/filestore/images?' + params)
     .then(response => response.json())

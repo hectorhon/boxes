@@ -41,7 +41,7 @@ async function remove(id) {
 }
 
 async function importVCard(vcard, batch) {
-  return repo.insert({
+  await repo.insert({
     vcard,
     meta: { batch }
   })

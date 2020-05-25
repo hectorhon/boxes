@@ -72,11 +72,10 @@ def run(rootpath, path_prefix, batch_name):
     #     file.new_fullpath = dst
     #     file.id = id
 
-    for file in files:
+    for file in files[0:100]:
         post_to_server(file, path_prefix, batch_name)
-        break
 
-    return files
+    # return files
 
 
 def get_file_sha256(fullpath):
