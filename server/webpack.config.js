@@ -3,6 +3,7 @@ module.exports = {
   entry: {
     'Table': './widgets/table/table.jsx',
     'ImageGallery': './widgets/image-gallery/image-gallery.jsx',
+    'ImageViewer': './widgets/image-gallery/image-viewer.jsx',
   },
   output: {
     filename: '[name].js',
