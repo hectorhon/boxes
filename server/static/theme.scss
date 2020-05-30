@@ -54,6 +54,18 @@ th, td {
     }
 }
 
+.image-viewer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    .img-container {
+        width: 100%;
+        img {
+            max-width: 100%;
+            image-orientation: from-image;
+        }
+    }
+}
+
 #chat-form {
     #message-area {
         height: 16em;

@@ -64,10 +64,34 @@ router.get('/filestore/images', wrap(async (_, res) => {
   })
 }))
 
+router.get('/filestore/images/view', wrap(async (req, res) => {
+  const { id: imageId } = req.query
+  res.render('filestore/images/view', {
+    title: 'Images - View',
+    imageId,
+    scripts: [
+      'vendor/react/react.development.js',
+      'vendor/react/react-dom.development.js',
+      'dist/ImageViewer.js',
+      'filestore/images-view.js',
+    ]
+  })
+}))
+
 router.get('/api/filestore/images', wrap(async (req, res) => {
   const { query, pageSize, pageNumber } = req.query
   const searchResult = await filestore.searchImages(query, pageSize, pageNumber)
   res.json(searchResult)
+}))
+
+router.get('/api/filestore/image/:id', wrap(async (req, res) => {
+  const { id } = req.params
+  const image = await filestore.getImage(id)
+  if (!image) {
+    res.status(404).end()
+  } else {
+    res.json(image)
+  }
 }))
 
 module.exports = router

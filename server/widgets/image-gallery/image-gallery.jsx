@@ -70,9 +70,11 @@ function ImageGallery(props) {
         {
           data.images.map(image => (
             <div key={image.id} className="img-container">
-              <img title={image.name}
-                   alt={image.name}
-                   src={rootPath + image.thumbnail_path} />
+              <a href={'/filestore/images/view?id=' + image.id}>
+                <img title={image.name}
+                     alt={image.name}
+                     src={rootPath + image.thumbnail_path} />
+              </a>
             </div>
           ))
         }

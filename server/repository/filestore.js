@@ -18,6 +18,15 @@ async function selectAll() {
   return result.rows
 }
 
+async function getImage(id) {
+  const result = await db.query(
+    'select id, title, path, add_date, mime_type, entry_date, meta ' +
+      "from boxes_filestore where mime_type like 'image/%' and id = $1",
+    [id]
+  )
+  return result.rows[0]
+}
+
 async function searchImages(query, pageSize, pageNumber) {
   const sql = 'select id, title, thumbnail_path, add_date from boxes_filestore ' +
     "where mime_type like 'image/%' " +
@@ -45,6 +54,7 @@ async function countMatchingImages(query) {
 module.exports = {
   insert,
   selectAll,
+  getImage,
   searchImages,
   countMatchingImages,
 }

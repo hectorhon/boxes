@@ -56,6 +56,10 @@ async function addImage(fileEntry) {
   })
 }
 
+async function getImage(id) {
+  return repo.getImage(id)
+}
+
 async function searchImages(query = '', pageSize = 10, pageNumber = 1) {
   const images = await repo.searchImages(query, pageSize, pageNumber)
   const total = await repo.countMatchingImages(query)
@@ -66,5 +70,6 @@ module.exports = {
   list,
   add,
   addImage,
+  getImage,
   searchImages,
 }
