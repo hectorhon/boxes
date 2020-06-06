@@ -78,6 +78,16 @@ router.get('/filestore/images/view', wrap(async (req, res) => {
   })
 }))
 
+router.post('/filestore/images/update', wrap(async (req, res) => {
+  const { id } = req.query
+  const { title, tags } = req.body
+  await filestore.updateImage(id, {
+    title,
+    tags: tags.split(','),
+  })
+  res.redirect('/filestore/images/view?id=' + id)
+}))
+
 router.get('/api/filestore/images', wrap(async (req, res) => {
   const { query, pageSize, pageNumber } = req.query
   const searchResult = await filestore.searchImages(query, pageSize, pageNumber)
