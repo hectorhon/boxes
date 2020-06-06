@@ -4,6 +4,8 @@ function ImageViewer(props) {
   const { imageId: id, rootPath } = props
 
   const [image, setImage] = useState()
+  const [tagsInput, setTagsInput] = useState('')
+  const [tags, setTags] = useState([])
 
   useEffect(() => {
     async function f() {
@@ -24,7 +26,26 @@ function ImageViewer(props) {
                 src={rootPath + image.path} />
           }
         </div>
-        <pre><code>{JSON.stringify(image, null, 2)}</code></pre>
+        <div>
+          <textarea value={tagsInput}
+                    onChange={event => {
+                      setTagsInput(event.target.value)
+                    }}
+                    onBlur={() => {
+                      const tags = tagsInput.split(',')
+                        .map(tag => tag.trim())
+                        .map(tag => tag.split(' ').filter(word => word).join(' '))
+                        .filter(tag => tag)
+                      const uniqueTags = [...new Set(tags)]
+                      setTags(uniqueTags)
+                      setTagsInput(uniqueTags.join(', '))
+                    }}>
+          </textarea>
+          <ul>
+            {tags.map(tag => <li key={tag}>{tag}</li>)}
+          </ul>
+          <pre><code>{JSON.stringify(image, null, 2)}</code></pre>
+        </div>
       </div>
     </div>
   )
