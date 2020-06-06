@@ -54,12 +54,12 @@ async function selectPreviousImage(id, sortBy) {
 async function searchImages(query, pageSize, pageNumber) {
   const sql = 'select id, title, thumbnail_path, add_date from boxes_filestore ' +
     "where mime_type like 'image/%' " +
-    'and (title ilike $1) ' +
+    'and (title ilike $1 or tags && $2) ' +
     'order by add_date ' +
-    'limit $2 offset $3'
+    'limit $3 offset $4'
   const result = await db.query(
     sql,
-    [`%${query}%`, pageSize, pageSize * (pageNumber - 1)]
+    [`%${query}%`, [query], pageSize, pageSize * (pageNumber - 1)]
   )
   return result.rows
 }
@@ -80,7 +80,7 @@ async function updateImage(id, fileEntry) {
   const sql = 'update boxes_filestore ' +
     'set title = $1, tags = $2 ' +
     'where id = $3'
-  return db.query(sql, [title, JSON.stringify(tags), id])
+  return db.query(sql, [title, tags, id])
 }
 
 module.exports = {
