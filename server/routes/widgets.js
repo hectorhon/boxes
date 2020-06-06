@@ -43,4 +43,16 @@ router.get('/widgets/image-gallery', (_, res) => {
   })
 })
 
+router.get('/widgets/extended-select', (_, res) => {
+  res.render('widgets/extended-select', {
+    title: 'Widgets - Extended select',
+    scripts: [
+      'vendor/react/react.development.js',
+      'vendor/react/react-dom.development.js',
+      'dist/ExtendedSelect.js',
+      'widgets/extended-select-example.js',
+    ],
+  })
+})
+
 module.exports = router

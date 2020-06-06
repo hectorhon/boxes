@@ -2,6 +2,7 @@ module.exports = {
   mode: 'development',
   entry: {
     'Table': './widgets/table/table.jsx',
+    'ExtendedSelect': './widgets/extended-select/extended-select.jsx',
     'ImageGallery': './widgets/image-gallery/image-gallery.jsx',
     'ImageViewer': './widgets/image-gallery/image-viewer.jsx',
   },
