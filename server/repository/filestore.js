@@ -18,10 +18,34 @@ async function selectAll() {
   return result.rows
 }
 
-async function getImage(id) {
+async function selectImageById(id) {
   const result = await db.query(
     'select id, title, path, add_date, mime_type, entry_date, meta, tags ' +
       "from boxes_filestore where mime_type like 'image/%' and id = $1",
+    [id]
+  )
+  return result.rows[0]
+}
+
+async function selectNextImage(id, sortBy) {
+  const subquery = `select ${sortBy} from boxes_filestore where id = $1`
+  const result = await db.query(
+    'select id from boxes_filestore ' +
+      "where mime_type like 'image/%' " +
+      `and ${sortBy} > (${subquery}) ` +
+      `order by ${sortBy} asc limit 1`,
+    [id]
+  )
+  return result.rows[0]
+}
+
+async function selectPreviousImage(id, sortBy) {
+  const subquery = `select ${sortBy} from boxes_filestore where id = $1`
+  const result = await db.query(
+    'select id from boxes_filestore ' +
+      "where mime_type like 'image/%' " +
+      `and ${sortBy} < (${subquery}) ` +
+      `order by ${sortBy} desc limit 1`,
     [id]
   )
   return result.rows[0]
@@ -52,7 +76,7 @@ async function countMatchingImages(query) {
 }
 
 async function updateImage(id, fileEntry) {
-  const { title, tags } = fileEntry 
+  const { title, tags } = fileEntry
   const sql = 'update boxes_filestore ' +
     'set title = $1, tags = $2 ' +
     'where id = $3'
@@ -62,7 +86,9 @@ async function updateImage(id, fileEntry) {
 module.exports = {
   insert,
   selectAll,
-  getImage,
+  selectImageById,
+  selectNextImage,
+  selectPreviousImage,
   searchImages,
   countMatchingImages,
   updateImage,

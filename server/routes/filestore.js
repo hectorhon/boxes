@@ -66,9 +66,13 @@ router.get('/filestore/images', wrap(async (_, res) => {
 
 router.get('/filestore/images/view', wrap(async (req, res) => {
   const { id: imageId } = req.query
+  const nextImage = await filestore.getNextImage(imageId)
+  const prevImage = await filestore.getPreviousImage(imageId)
   res.render('filestore/images/view', {
     title: 'Images - View',
     imageId,
+    nextImage,
+    prevImage,
     scripts: [
       'vendor/react/react.development.js',
       'vendor/react/react-dom.development.js',

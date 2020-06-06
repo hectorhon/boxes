@@ -57,7 +57,15 @@ async function addImage(fileEntry) {
 }
 
 async function getImage(id) {
-  return repo.getImage(id)
+  return repo.selectImageById(id)
+}
+
+async function getNextImage(id, sortBy = 'add_date') {
+  return repo.selectNextImage(id, sortBy)
+}
+
+async function getPreviousImage(id, sortBy = 'add_date') {
+  return repo.selectPreviousImage(id, sortBy)
 }
 
 async function searchImages(query = '', pageSize = 10, pageNumber = 1) {
@@ -75,6 +83,8 @@ module.exports = {
   add,
   addImage,
   getImage,
+  getNextImage,
+  getPreviousImage,
   searchImages,
   updateImage,
 }
