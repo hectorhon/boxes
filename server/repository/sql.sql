@@ -19,5 +19,5 @@ CREATE TABLE public.boxes_filestore (
     entry_date timestamp with time zone,
     thumbnail_path character varying,
     meta jsonb,
-    tags jsonb
+    tags character varying[] DEFAULT '{}'::character varying[]
 );
