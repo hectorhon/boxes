@@ -2,13 +2,21 @@ import { useState, useEffect, useRef } from 'react'
 import classNames from 'classnames'
 
 function ExtendedSelect(props) {
-  const { dataSource } = props
+  const {
+    placeholder,
+    dataSource,
+    onChange, onEnterKey, shouldClearAfterEnter
+  } = props
 
   const [query, setQuery] = useState('')
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [suggestions, setSuggestions] = useState([])
   const [selectedSuggestion, setSelectedSuggestion] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    onChange(query)
+  }, [query])
 
   const timeoutIdRef = useRef(null)
 
@@ -71,10 +79,26 @@ function ExtendedSelect(props) {
         }
         break
       case 'Enter':
+        if (selectedSuggestion) {
+          onEnterKey(selectedSuggestion)
+        } else {
+          onEnterKey(query)
+        }
+        if (shouldClearAfterEnter) {
+          setQuery('')
+        } else {
+          if (selectedSuggestion) {
+            setQuery(selectedSuggestion)
+          }
+        }
+        setIsDropdownOpen(false)
+        break
       case 'Tab':
         if (selectedSuggestion) {
           setQuery(selectedSuggestion)
         }
+        setIsDropdownOpen(false)
+        break
       case 'Escape':
         setIsDropdownOpen(false)
         break
@@ -86,7 +110,7 @@ function ExtendedSelect(props) {
     <div className="extended-select-container">
       <div className="extended-select-input-container" ref={containerRef}>
         <input type="text"
-               placeholder="Search..."
+               placeholder={placeholder}
                value={query}
                onKeyDown={handleSpecialKeyEvents}
                onChange={event => {
@@ -119,6 +143,12 @@ function ExtendedSelect(props) {
       {isLoading && isDropdownOpen && <div className="spinner"></div>}
     </div>
   )
+}
+
+ExtendedSelect.defaultProps = {
+  placeholder: 'Search...',
+  onChange: () => {},
+  onEnterKey: () => {}
 }
 
 export default ExtendedSelect
