@@ -66,10 +66,15 @@ async function searchImages(query = '', pageSize = 10, pageNumber = 1) {
   return { images, total }
 }
 
+async function updateImage(id, fileEntry) {
+  return repo.updateImage(id, fileEntry)
+}
+
 module.exports = {
   list,
   add,
   addImage,
   getImage,
   searchImages,
+  updateImage,
 }

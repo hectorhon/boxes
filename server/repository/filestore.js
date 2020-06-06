@@ -20,7 +20,7 @@ async function selectAll() {
 
 async function getImage(id) {
   const result = await db.query(
-    'select id, title, path, add_date, mime_type, entry_date, meta ' +
+    'select id, title, path, add_date, mime_type, entry_date, meta, tags ' +
       "from boxes_filestore where mime_type like 'image/%' and id = $1",
     [id]
   )
@@ -51,10 +51,19 @@ async function countMatchingImages(query) {
   return result.rows[0].count
 }
 
+async function updateImage(id, fileEntry) {
+  const { title, tags } = fileEntry 
+  const sql = 'update boxes_filestore ' +
+    'set title = $1, tags = $2 ' +
+    'where id = $3'
+  return db.query(sql, [title, JSON.stringify(tags), id])
+}
+
 module.exports = {
   insert,
   selectAll,
   getImage,
   searchImages,
   countMatchingImages,
+  updateImage,
 }
