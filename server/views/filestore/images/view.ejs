@@ -1,5 +1,12 @@
 <%- include('/header') %>
 
-<div id="image-viewer-container" data-image-id="<%= imageId %>"></div>
+<div>
+  <a <% if (prevImage) { %>href="/filestore/images/view?id=<%= prevImage.id %>"<% } %>>Previous</a>
+  <a <% if (nextImage) { %>href="/filestore/images/view?id=<%= nextImage.id %>"<% } %>>Next</a>
+</div>
+
+
+<div id="image-viewer-container" data-image-id="<%= imageId %>">
+</div>
 
 <%- include('/footer') %>
