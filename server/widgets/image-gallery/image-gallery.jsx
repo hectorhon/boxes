@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import classNames from 'classnames'
+import ImageGalleryTagger from './image-gallery-tagger.jsx'
 
 async function getData(dataSource, query, pageSize = 10, pageNumber = 1) {
   if (typeof dataSource === 'function') {
@@ -42,6 +43,8 @@ function ImageGallery(props) {
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [query, setQuery] = useState('')
+  const [selectedImageIds, setSelectedImageIds] = useState([])
+  const [isTaggerVisible, setIsTaggerVisible] = useState(false)
 
   useEffect(() => {
     async function f() {
@@ -51,6 +54,45 @@ function ImageGallery(props) {
     }
     f()
   }, [pageSize, pageNumber, query])
+
+  function addTags(imageIds, tagsToAdd) {
+    setData(prevData => {
+      return {
+        ...data,
+        images: prevData.images.map(image => {
+          if (imageIds.includes(image.id)) {
+            return {
+              ...image,
+              tags: [
+                ...image.tags,
+                tagsToAdd.filter(newTag => !image.tags.includes(newTag))
+              ],
+            }
+          } else {
+            return image
+          }
+        }),
+      }
+    })
+  }
+
+  function removeTags(imageIds, tagsToRemove) {
+    setData(prevData => {
+      return {
+        ...data,
+        images: prevData.images.map(image => {
+          if (imageIds.includes(image.id)) {
+            return {
+              ...image,
+              tags: image.tags.filter(tag => !tagsToRemove.includes(tag)),
+            }
+          } else {
+            return image
+          }
+        }),
+      }
+    })
+  }
 
   return (
     <div className="image-gallery">
@@ -66,28 +108,42 @@ function ImageGallery(props) {
           setPageNumber(1)
           setQuery('')
         }}>Clear</button>
-        <span>{data.images.filter(image => image.selected).length} items selected</span>
+        <span>{selectedImageIds.length} items selected</span>
+        <button onClick={() => setIsTaggerVisible(!isTaggerVisible)}>
+          {isTaggerVisible ? 'Hide' : 'Show'} tagger
+        </button>
       </div>
+      {
+        isTaggerVisible &&
+          <ImageGalleryTagger selectedImageIds={selectedImageIds}
+                              onTagsAdded={addTags}
+                              onTagsRemoved={removeTags} />
+      }
       <div className='image-gallery-grid'>
         {
           data.images.map(image => {
             const classes = classNames({
               "img-container": true,
-              "img-container-selected": image.selected,
+              "img-container-selected": selectedImageIds.indexOf(image.id) >= 0,
             })
             return (
-              <div key={image.id} className={classes}
-                   data-href={'/filestore/images/view?id=' + image.id}
-                   onClick={() => setData(prevData => {
-                     image.selected = !image.selected
-                     return {
-                       images: [...prevData.images],
-                       ...prevData,
-                     }
-                   })}>
-                <img title={image.name}
-                     alt={image.name}
-                     src={rootPath + image.thumbnail_path} />
+              <div key={image.id} className="image-gallery-item">
+                <div className={classes}
+                     data-href={'/filestore/images/view?id=' + image.id}
+                     onClick={() => {
+                       if (selectedImageIds.indexOf(image.id) >= 0) {
+                         setSelectedImageIds(selectedImageIds.filter(id => id != image.id))
+                       } else {
+                         setSelectedImageIds([...selectedImageIds, image.id])
+                       }
+                     }}>
+                  <img title={image.name}
+                       alt={image.name}
+                       src={rootPath + image.thumbnail_path} />
+                </div>
+                <div className="image-gallery-item-description">
+                  {image.tags.length ? image.tags.join(', ') : '(no tags)'}
+                </div>
               </div>
             )})
         }

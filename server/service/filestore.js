@@ -90,6 +90,14 @@ async function updateImage(id, fileEntry) {
   return repo.updateImage(id, fileEntry)
 }
 
+async function addTagsToImages(imageIds, tagsToAdd) {
+  return repo.addTagsToImages(imageIds, tagsToAdd)
+}
+
+async function removeTagsFromImages(imageIds, tagsToAdd) {
+  return repo.removeTagsFromImages(imageIds, tagsToAdd)
+}
+
 module.exports = {
   list,
   add,
@@ -100,4 +108,6 @@ module.exports = {
   getPreviousImage,
   searchImages,
   updateImage,
+  addTagsToImages,
+  removeTagsFromImages,
 }
