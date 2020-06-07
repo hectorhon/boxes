@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import classNames from 'classnames'
 
 async function getData(dataSource, query, pageSize = 10, pageNumber = 1) {
   if (typeof dataSource === 'function') {
@@ -37,7 +38,7 @@ function ImageGallery(props) {
     images: [],
     total: 0,
   })
-  const [pageSize, setPageSize] = useState(10)
+  const [pageSize, setPageSize] = useState(50)
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [query, setQuery] = useState('')
@@ -52,8 +53,8 @@ function ImageGallery(props) {
   }, [pageSize, pageNumber, query])
 
   return (
-    <div>
-      <p>
+    <div className="image-gallery">
+      <div className="image-gallery-toolbar">
         <input type='text'
                placeholder='Search...'
                value={query}
@@ -65,18 +66,30 @@ function ImageGallery(props) {
           setPageNumber(1)
           setQuery('')
         }}>Clear</button>
-      </p>
-      <div className='image-gallery'>
+        <span>{data.images.filter(image => image.selected).length} items selected</span>
+      </div>
+      <div className='image-gallery-grid'>
         {
-          data.images.map(image => (
-            <div key={image.id} className="img-container">
-              <a href={'/filestore/images/view?id=' + image.id}>
+          data.images.map(image => {
+            const classes = classNames({
+              "img-container": true,
+              "img-container-selected": image.selected,
+            })
+            return (
+              <div key={image.id} className={classes}
+                   data-href={'/filestore/images/view?id=' + image.id}
+                   onClick={() => setData(prevData => {
+                     image.selected = !image.selected
+                     return {
+                       images: [...prevData.images],
+                       ...prevData,
+                     }
+                   })}>
                 <img title={image.name}
                      alt={image.name}
                      src={rootPath + image.thumbnail_path} />
-              </a>
-            </div>
-          ))
+              </div>
+            )})
         }
       </div>
       <p>
