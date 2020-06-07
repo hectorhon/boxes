@@ -1,6 +1,9 @@
 const path = require('path')
 const mime = require('mime-types')
+const fs = require('fs')
+const sharp = require('sharp')
 
+const config = require('../config')
 const repo = require('../repository/filestore')
 
 async function list() {
@@ -18,18 +21,15 @@ async function add(fileEntry) {
   })
 }
 
-async function addImage(fileEntry) {
-  const { title, path: relPath, mimeType, entryDate, meta } = fileEntry
-
-  const absolutePath = path.join(config.FILESTORE_PATH, relPath)
-
-  // Guess mimeType if not provided
-  const mimeType = fileEntry.mimeType ||  mime.lookup(absolutePath)
-
-  // Generate thumbnail
+async function generateThumbnail(relativeImagePath) {
+  console.log(`Generating thumbnail for ${relativeImagePath}...`)
+  const absolutePath = path.join(
+    config.FILESTORE_PATH,
+    relativeImagePath,
+  )
   const absoluteThumbnailsPath = path.join(
     config.THUMBNAILS_PATH,
-    relPath
+    relativeImagePath,
   )
   try {
     fs.mkdirSync(path.dirname(absoluteThumbnailsPath), {
@@ -40,10 +40,22 @@ async function addImage(fileEntry) {
   }
   await sharp(absolutePath)
     .rotate()  // Auto orient based on EXIF orientation tag and remove the tag
-    .resize(200, 200, {
-      fit: 'outside',
+    .resize(192, 192, {
+      fit: 'inside',
     })
     .toFile(absoluteThumbnailsPath)
+  console.log(`Done generating thumbnail for ${relativeImagePath}`)
+}
+
+async function addImage(fileEntry) {
+  const { title, path: relPath, mimeType, entryDate, meta } = fileEntry
+
+  // Guess mimeType if not provided
+  const absolutePath = path.join(config.FILESTORE_PATH, relPath)
+  const mimeType = fileEntry.mimeType ||  mime.lookup(absolutePath)
+
+  // Generate thumbnail
+  await generateThumbnail(relPath)
 
   // Save file entry
   await repo.insert({
@@ -82,6 +94,7 @@ module.exports = {
   list,
   add,
   addImage,
+  generateThumbnail,
   getImage,
   getNextImage,
   getPreviousImage,

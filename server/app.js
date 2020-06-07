@@ -8,6 +8,7 @@ const config = require('./config')
 const contactsRouter = require('./routes/contacts')
 const widgetsRouter = require('./routes/widgets')
 const filestoreRouter = require('./routes/filestore')
+const thumbnailsRouter = require('./routes/thumbnails')
 const chatRouter = require('./routes/chat')
 
 const app = express()
@@ -44,9 +45,8 @@ app.get('/', (req, res) => {
 app.use(contactsRouter)
 app.use(widgetsRouter)
 app.use(filestoreRouter)
-
+app.use(thumbnailsRouter)
 app.use('/filestore', express.static(config.FILESTORE_PATH))
-app.use('/thumbnails', express.static(config.THUMBNAILS_PATH))
 
 const server = http.createServer(app)
 app.use(chatRouter(server))
