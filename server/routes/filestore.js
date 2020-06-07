@@ -108,4 +108,16 @@ router.get('/api/filestore/image/:id', wrap(async (req, res) => {
   }
 }))
 
+router.post('/api/filestore/image/add-tags', wrap(async (req, res) => {
+  const { imageIds, tagsToAdd } = req.body
+  await filestore.addTagsToImages(imageIds, tagsToAdd)
+  res.sendStatus(200)
+}))
+
+router.post('/api/filestore/image/remove-tags', wrap(async (req, res) => {
+  const { imageIds, tagsToRemove } = req.body
+  await filestore.removeTagsFromImages(imageIds, tagsToRemove)
+  res.sendStatus(200)
+}))
+
 module.exports = router

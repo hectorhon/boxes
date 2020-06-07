@@ -52,7 +52,7 @@ async function selectPreviousImage(id, sortBy) {
 }
 
 async function searchImages(query, pageSize, pageNumber) {
-  const sql = 'select id, title, thumbnail_path, add_date from boxes_filestore ' +
+  const sql = 'select id, title, thumbnail_path, add_date, tags from boxes_filestore ' +
     "where mime_type like 'image/%' " +
     'and (title ilike $1 or tags && $2) ' +
     'order by add_date ' +
@@ -83,6 +83,31 @@ async function updateImage(id, fileEntry) {
   return db.query(sql, [title, tags, id])
 }
 
+async function addTagsToImages(imageIds, tagsToAdd) {
+  const addTagsQuery = `
+    update boxes_filestore
+    set tags = (select array_agg(distinct combinedTags) from unnest(tags || $1) combinedTags)
+    where id = any ($2)`
+  await db.query(addTagsQuery, [tagsToAdd, imageIds])
+}
+
+async function removeTagsFromImages(imageIds, tagsToRemove) {
+  const removeTagsQuery = `
+with unnested as (
+  select id, unnest(tags) as tag from boxes_filestore
+), filtered as (
+  select id, array_agg(tag) as tags from unnested
+  where tag != all ($1)
+  group by id
+)
+update boxes_filestore
+set tags = coalesce(
+  (select tags from filtered where filtered.id = boxes_filestore.id),
+  '{}')
+where id = any ($2)`
+  await db.query(removeTagsQuery, [tagsToRemove, imageIds])
+}
+
 module.exports = {
   insert,
   selectAll,
@@ -92,4 +117,6 @@ module.exports = {
   searchImages,
   countMatchingImages,
   updateImage,
+  addTagsToImages,
+  removeTagsFromImages,
 }
