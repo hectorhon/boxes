@@ -43,6 +43,7 @@ function ImageGallery(props) {
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [query, setQuery] = useState('')
+  const [isSelectMode, setIsSelectMode] = useState(false)
   const [selectedImageIds, setSelectedImageIds] = useState([])
   const [isTaggerVisible, setIsTaggerVisible] = useState(false)
   const [lastClickAction, setLastClickAction] = useState(null)  // 'select' or 'deselect'
@@ -110,7 +111,10 @@ function ImageGallery(props) {
           setPageNumber(1)
           setQuery('')
         }}>Clear</button>
-        <span>{selectedImageIds.length} items selected</span>
+        {isSelectMode && <span>{selectedImageIds.length} items selected</span>}
+        <button onClick={() => setSelectedImageIds([]) || setIsSelectMode(!isSelectMode)}>
+          {isSelectMode ? 'Stop' : 'Start'} select mode
+        </button>
         <button onClick={() => setIsTaggerVisible(!isTaggerVisible)}>
           {isTaggerVisible ? 'Hide' : 'Show'} tagger
         </button>
@@ -124,42 +128,45 @@ function ImageGallery(props) {
       <div className='image-gallery-grid'>
         {
           data.images.map(image => {
-            const classes = classNames({
-              "img-container": true,
-              "img-container-selected": selectedImageIds.indexOf(image.id) >= 0,
-            })
             return (
               <div key={image.id} className="image-gallery-item">
-                <div className={classes}
-                     data-href={'/filestore/images/view?id=' + image.id}
-                     onClick={event => {
-                       if (event.shiftKey) {
-                         const imageIds = data.images.map(image => image.id)
-                         const index1 = imageIds.indexOf(lastClickImageId)
-                         const index2 = imageIds.indexOf(image.id)
-                         const startIndex = Math.min(index1, index2)
-                         const endIndex = Math.max(index1, index2)
-                         const selection = imageIds.slice(startIndex, endIndex + 1)
-                         if (lastClickAction === 'select') {
-                           setSelectedImageIds([...new Set([...selectedImageIds, ...selection])])
-                         } else if (lastClickAction === 'deselect') {
-                           setSelectedImageIds(selectedImageIds.filter(imageId => !selection.includes(imageId)))
-                         }
-                       } else {
-                         if (selectedImageIds.indexOf(image.id) >= 0) {
-                           setSelectedImageIds(selectedImageIds.filter(id => id != image.id))
-                           setLastClickAction('deselect')
-                         } else {
-                           setSelectedImageIds([...selectedImageIds, image.id])
-                           setLastClickAction('select')
-                         }
+                <a href={isSelectMode ? 'javascript:void(0);' : '/filestore/images/view?id=' + image.id}
+                   className={classNames({
+                     "img-container": true,
+                     "img-container-selected": selectedImageIds.indexOf(image.id) >= 0,
+                   })}
+                   onClick={event => {
+                     if (!isSelectMode) {
+                       return
+                     }
+                     if (event.shiftKey) {
+                       event.preventDefault()  // avoid opening new tab due to shift+click
+                       const imageIds = data.images.map(image => image.id)
+                       const index1 = imageIds.indexOf(lastClickImageId)
+                       const index2 = imageIds.indexOf(image.id)
+                       const startIndex = Math.min(index1, index2)
+                       const endIndex = Math.max(index1, index2)
+                       const selection = imageIds.slice(startIndex, endIndex + 1)
+                       if (lastClickAction === 'select') {
+                         setSelectedImageIds([...new Set([...selectedImageIds, ...selection])])
+                       } else if (lastClickAction === 'deselect') {
+                         setSelectedImageIds(selectedImageIds.filter(imageId => !selection.includes(imageId)))
                        }
-                       setLastClickImageId(image.id)
-                     }}>
+                     } else {
+                       if (selectedImageIds.indexOf(image.id) >= 0) {
+                         setSelectedImageIds(selectedImageIds.filter(id => id != image.id))
+                         setLastClickAction('deselect')
+                       } else {
+                         setSelectedImageIds([...selectedImageIds, image.id])
+                         setLastClickAction('select')
+                       }
+                     }
+                     setLastClickImageId(image.id)
+                   }} >
                   <img title={image.name}
                        alt={image.name}
                        src={rootPath + image.thumbnail_path} />
-                </div>
+                </a>
                 <div className="image-gallery-item-description">
                   {image.tags.length ? image.tags.join(', ') : '(no tags)'}
                 </div>
