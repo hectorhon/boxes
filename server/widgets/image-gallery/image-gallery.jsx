@@ -45,6 +45,8 @@ function ImageGallery(props) {
   const [query, setQuery] = useState('')
   const [selectedImageIds, setSelectedImageIds] = useState([])
   const [isTaggerVisible, setIsTaggerVisible] = useState(false)
+  const [lastClickAction, setLastClickAction] = useState(null)  // 'select' or 'deselect'
+  const [lastClickImageId, setLastClickImageId] = useState(null)
 
   useEffect(() => {
     async function f() {
@@ -130,12 +132,29 @@ function ImageGallery(props) {
               <div key={image.id} className="image-gallery-item">
                 <div className={classes}
                      data-href={'/filestore/images/view?id=' + image.id}
-                     onClick={() => {
-                       if (selectedImageIds.indexOf(image.id) >= 0) {
-                         setSelectedImageIds(selectedImageIds.filter(id => id != image.id))
+                     onClick={event => {
+                       if (event.shiftKey) {
+                         const imageIds = data.images.map(image => image.id)
+                         const index1 = imageIds.indexOf(lastClickImageId)
+                         const index2 = imageIds.indexOf(image.id)
+                         const startIndex = Math.min(index1, index2)
+                         const endIndex = Math.max(index1, index2)
+                         const selection = imageIds.slice(startIndex, endIndex + 1)
+                         if (lastClickAction === 'select') {
+                           setSelectedImageIds([...new Set([...selectedImageIds, ...selection])])
+                         } else if (lastClickAction === 'deselect') {
+                           setSelectedImageIds(selectedImageIds.filter(imageId => !selection.includes(imageId)))
+                         }
                        } else {
-                         setSelectedImageIds([...selectedImageIds, image.id])
+                         if (selectedImageIds.indexOf(image.id) >= 0) {
+                           setSelectedImageIds(selectedImageIds.filter(id => id != image.id))
+                           setLastClickAction('deselect')
+                         } else {
+                           setSelectedImageIds([...selectedImageIds, image.id])
+                           setLastClickAction('select')
+                         }
                        }
+                       setLastClickImageId(image.id)
                      }}>
                   <img title={image.name}
                        alt={image.name}
