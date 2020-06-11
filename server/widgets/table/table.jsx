@@ -85,9 +85,19 @@ function Table(props) {
               data.rows.map(row => (
                 <tr key={row.id}>
                   {
-                    columns.map(column => (
-                      <td key={column.name}>{row[column.name]}</td>
-                    ))
+                    columns.map(column => {
+                      if (typeof column.escapedHtml === 'function') {
+                        return (
+                          <td key={column.name} dangerouslySetInnerHTML={{
+                            __html: column.escapedHtml(row)
+                          }}></td>
+                        )
+                      } else {
+                        return (
+                          <td key={column.name}>{row[column.name]}</td>
+                        )
+                      }
+                    })
                   }
                 </tr>
               ))
