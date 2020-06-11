@@ -21,6 +21,12 @@ router.get('/filestore', wrap(async (_, res) => {
   res.render('filestore/list', {
     title: 'Files',
     fileEntries,
+    scripts: [
+      'vendor/react/react.development.js',
+      'vendor/react/react-dom.development.js',
+      'dist/Table.js',
+      'filestore/list.js',
+    ]
   })
 }))
 
@@ -37,6 +43,12 @@ router.post('/filestore/newEntry', wrap(async (req, res) => {
     path,
   })
   res.redirect('/filestore')
+}))
+
+router.get('/api/filestore/files', wrap(async (req, res) => {
+  const { searchText, pageSize, pageNumber } = req.query
+  const searchResult = await filestore.searchTitleOrPath(searchText, pageSize, pageNumber)
+  res.json(searchResult)
 }))
 
 router.post('/api/filestore/newEntry', wrap(async (req, res) => {

@@ -35,6 +35,7 @@ ReactDOM.render(
   React.createElement(Table.default, {
     columns: sampleColumns,
     dataSource: sampleData,
+    pageSize: 3,
   }),
   domContainer
 )
