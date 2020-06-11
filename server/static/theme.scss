@@ -26,10 +26,17 @@ th, td {
 
 .image-gallery {
 
-    .image-gallery-toolbar {
-    }
+    .image-gallery-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: whitesmoke;
 
-    .image-gallery-tagger {
+        .image-gallery-toolbar {
+        }
+
+        .image-gallery-tagger {
+        }
     }
 
     .image-gallery-grid {

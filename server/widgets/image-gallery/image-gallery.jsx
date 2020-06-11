@@ -68,7 +68,7 @@ function ImageGallery(props) {
               ...image,
               tags: [
                 ...image.tags,
-                tagsToAdd.filter(newTag => !image.tags.includes(newTag))
+                ...tagsToAdd.filter(newTag => !image.tags.includes(newTag)),
               ],
             }
           } else {
@@ -99,32 +99,41 @@ function ImageGallery(props) {
 
   return (
     <div className="image-gallery">
-      <div className="image-gallery-toolbar">
-        <input type='text'
-               placeholder='Search...'
-               value={query}
-               onChange={event => {
-                 setPageNumber(1)
-                 setQuery(event.target.value)
-               }} />
-        <button type='button' onClick={() => {
-          setPageNumber(1)
-          setQuery('')
-        }}>Clear</button>
-        {isSelectMode && <span>{selectedImageIds.length} items selected</span>}
-        <button onClick={() => setSelectedImageIds([]) || setIsSelectMode(!isSelectMode)}>
-          {isSelectMode ? 'Stop' : 'Start'} select mode
-        </button>
-        <button onClick={() => setIsTaggerVisible(!isTaggerVisible)}>
-          {isTaggerVisible ? 'Hide' : 'Show'} tagger
-        </button>
+      <div className="image-gallery-header">
+        <div className="image-gallery-toolbar">
+          <input type='text'
+                 placeholder='Search...'
+                 value={query}
+                 onChange={event => {
+                   setPageNumber(1)
+                   setQuery(event.target.value)
+                 }} />
+          <button type='button' onClick={() => {
+            setPageNumber(1)
+            setQuery('')
+          }}>Clear</button>
+          {isSelectMode && <span>{selectedImageIds.length} items selected</span>}
+          <button onClick={() => {
+            setSelectedImageIds([])
+            if (isSelectMode) {
+              setIsTaggerVisible(false)
+            }
+            setIsSelectMode(!isSelectMode)
+          }}>
+            {isSelectMode ? 'Stop' : 'Start'} select mode
+          </button>
+          <button onClick={() => setIsTaggerVisible(!isTaggerVisible)}
+                  disabled={!isSelectMode}>
+            {isTaggerVisible ? 'Hide' : 'Show'} tagger
+          </button>
+        </div>
+        {
+          isTaggerVisible &&
+            <ImageGalleryTagger selectedImageIds={selectedImageIds}
+                                onTagsAdded={addTags}
+                                onTagsRemoved={removeTags} />
+        }
       </div>
-      {
-        isTaggerVisible &&
-          <ImageGalleryTagger selectedImageIds={selectedImageIds}
-                              onTagsAdded={addTags}
-                              onTagsRemoved={removeTags} />
-      }
       <div className='image-gallery-grid'>
         {
           data.images.map(image => {
