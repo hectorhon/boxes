@@ -4,9 +4,11 @@ function ImageGalleryTagger(props) {
   const { selectedImageIds, onTagsAdded, onTagsRemoved } = props
 
   const [tagsInput, setTagsInput] = useState('')
+  const [isProcessing, setIsProcessing] = useState(null)
 
   async function addTags() {
     const tags = tagsInput.split(',').map(tag => tag.trim())
+    setIsProcessing(true)
     await fetch('/api/filestore/image/add-tags', {
       method: 'POST',
       headers: {
@@ -17,11 +19,13 @@ function ImageGalleryTagger(props) {
         tagsToAdd: tags
       }),
     })
+    setIsProcessing(false)
     onTagsAdded(selectedImageIds, tags)
   }
 
   async function removeTags() {
     const tags = tagsInput.split(',').map(tag => tag.trim())
+    setIsProcessing(true)
     await fetch('/api/filestore/image/remove-tags', {
       method: 'POST',
       headers: {
@@ -32,6 +36,7 @@ function ImageGalleryTagger(props) {
         tagsToRemove: tags
       }),
     })
+    setIsProcessing(false)
     onTagsRemoved(selectedImageIds, tags)
   }
 
@@ -46,13 +51,18 @@ function ImageGalleryTagger(props) {
                 onChange={event => setTagsInput(event.target.value)} />
       <div>
         <button type="button"
-                onClick={addTags}>
+                onClick={addTags}
+                disable={isProcessing}>
           Add tags to selected images
         </button>
         <button type="button"
-                onClick={removeTags}>
+                onClick={removeTags}
+                disabled={isProcessing}>
           Remove tags from selected images
         </button>
+        <span>
+          {isProcessing === true ? 'Processing...' : (isProcessing === false ? 'Done!' : '')}
+        </span>
       </div>
     </form>
   )
