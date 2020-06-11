@@ -26,6 +26,7 @@ router.get('/widgets/table', (_, res) => {
       'vendor/react/react.development.js',
       'vendor/react/react-dom.development.js',
       'dist/Table.js',
+      'vendor/ejs/ejs.js',
       'widgets/table-example.js',
     ],
   })

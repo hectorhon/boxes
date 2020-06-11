@@ -6,6 +6,13 @@ const sampleColumns = [{
   name: 'age',
   label: 'Age',
   type: 'number',
+}, {
+  name: 'say',
+  label: 'Say',
+  type: 'string',
+  escapedHtml: data => {
+    return ejs.render("<b><%= name.split('').reverse().join('') %></b>", data)
+  },
 }]
 
 const sampleData = [{
