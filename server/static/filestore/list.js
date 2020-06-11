@@ -9,6 +9,12 @@ ReactDOM.render(
       name: 'path',
       label: 'Path',
       type: 'string',
+      escapedHtml: data => {
+        return ejs.render(
+          '<a href="/filestore<%= path %>"><%= path %></a>',
+          data
+        )
+      }
     }, {
       name: 'add_date',
       label: 'Added on',
