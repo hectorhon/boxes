@@ -18,6 +18,26 @@ async function selectAll() {
   return result.rows
 }
 
+async function selectTitleOrPathLike(searchText, pageSize, pageNumber) {
+  const result = await db.query(
+    'select id, title, path, add_date from boxes_filestore ' +
+      'where title ilike $1 or path ilike $1 ' +
+      'order by add_date desc ' +
+      'limit $2 offset $3',
+    [`%${searchText}%`, pageSize, pageSize * (pageNumber - 1)]
+  )
+  return result.rows
+}
+
+async function countTitleOrPathLike(searchText) {
+  const result = await db.query(
+    'select count(*) as count from boxes_filestore ' +
+      'where title ilike $1 or path ilike $1 ',
+    [`%${searchText}%`]
+  )
+  return result.rows[0].count
+}
+
 async function selectImageById(id) {
   const result = await db.query(
     'select id, title, path, add_date, mime_type, entry_date, meta, tags ' +
@@ -67,10 +87,10 @@ async function searchImages(query, pageSize, pageNumber) {
 async function countMatchingImages(query) {
   const sql = 'select count(*) as count from boxes_filestore ' +
     "where mime_type like 'image/%' " +
-    'and (title ilike $1) '
+    'and (title ilike $1 or tags && $2) '
   const result = await db.query(
     sql,
-    [`%${query}%`]
+    [`%${query}%`, [query]]
   )
   return result.rows[0].count
 }
@@ -111,6 +131,8 @@ where id = any ($2)`
 module.exports = {
   insert,
   selectAll,
+  selectTitleOrPathLike,
+  countTitleOrPathLike,
   selectImageById,
   selectNextImage,
   selectPreviousImage,

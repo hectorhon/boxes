@@ -10,6 +10,12 @@ async function list() {
   return repo.selectAll()
 }
 
+async function searchTitleOrPath(searchText, pageSize, pageNumber) {
+  const files = await repo.selectTitleOrPathLike(searchText, pageSize, pageNumber)
+  const total = await repo.countTitleOrPathLike(searchText)
+  return { files, total }
+}
+
 async function add(fileEntry) {
   const { title, path: relPath, mimeType, entryDate, meta } = fileEntry
   await repo.insert({
@@ -100,6 +106,7 @@ async function removeTagsFromImages(imageIds, tagsToAdd) {
 
 module.exports = {
   list,
+  searchTitleOrPath,
   add,
   addImage,
   generateThumbnail,

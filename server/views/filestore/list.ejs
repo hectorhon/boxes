@@ -2,23 +2,6 @@
 
 <p><a href="/filestore/newEntry">New</a></p>
 
-<table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Path</th>
-      <th>Added on</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% fileEntries.forEach(entry => { %>
-      <tr>
-        <td><%= entry.title %></td>
-        <td><a href="/filestore<%= entry.path %>"><%= entry.path %></a></td>
-        <td><%= entry.add_date %></td>
-      </tr>
-    <% }) %>
-  </tbody>
-</table>
+<div id="table-container"></div>
 
 <%- include('/footer') %>

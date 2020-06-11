@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
 
 async function getData(dataSource, searchText, pageSize = 10, pageNumber = 1) {
-  // if (typeof dataSource === 'function') {
-  //   return dataSource(pageSize, pageNumber)
-  // } else
-  if (Array.isArray(dataSource)) {
+  if (typeof dataSource === 'function') {
+    const data = await dataSource(pageSize, pageNumber, searchText)
+    return data
+  } else if (Array.isArray(dataSource)) {
     const searchTokens = searchText.split(' ')
       .filter(token => token.length > 0)
       .map(token => token.toLowerCase())
@@ -32,13 +32,12 @@ async function getData(dataSource, searchText, pageSize = 10, pageNumber = 1) {
 }
 
 function Table(props) {
-  const { columns, dataSource } = props
+  const { columns, dataSource, pageSize } = props
 
   const [data, setData] = useState({
     rows: [],
     length: 0,
   })
-  const [pageSize, setPageSize] = useState(3)
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchText, setSearchText] = useState('')
@@ -111,6 +110,10 @@ function Table(props) {
       </p>
     </div>
   )
+}
+
+Table.defaultProps = {
+  pageSize: 10,
 }
 
 export default Table
