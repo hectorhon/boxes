@@ -25,6 +25,7 @@ router.get('/filestore', wrap(async (_, res) => {
       'vendor/react/react.development.js',
       'vendor/react/react-dom.development.js',
       'dist/Table.js',
+      'vendor/ejs/ejs.js',
       'filestore/list.js',
     ]
   })
