@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from 'react'
 
+async function getUniqueTags() {
+  const uniqueTags = await fetch('/api/filestore/uniqueTags')
+    .then(response => response.json())
+  return uniqueTags
+}
+
+function splitToTags(str) {
+  return str.split(',').map(tag => tag.trim()).filter(tag => tag)
+}
+
+function joinToTags(tags) {
+  return tags.join(', ')
+}
+
 function ImageGalleryTagger(props) {
   const { selectedImageIds, onTagsAdded, onTagsRemoved } = props
 
   const [tagsInput, setTagsInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(null)
+  const [uniqueTags, setUniqueTags] = useState([])
 
   async function addTags() {
-    const tags = tagsInput.split(',').map(tag => tag.trim())
+    const tags = splitToTags(tagsInput)
     setIsProcessing(true)
     await fetch('/api/filestore/image/add-tags', {
       method: 'POST',
@@ -24,7 +39,7 @@ function ImageGalleryTagger(props) {
   }
 
   async function removeTags() {
-    const tags = tagsInput.split(',').map(tag => tag.trim())
+    const tags = splitToTags(tagsInput)
     setIsProcessing(true)
     await fetch('/api/filestore/image/remove-tags', {
       method: 'POST',
@@ -40,16 +55,41 @@ function ImageGalleryTagger(props) {
     onTagsRemoved(selectedImageIds, tags)
   }
 
+  useEffect(() => {
+    async function f() {
+      const uniqueTags = await getUniqueTags()
+      setUniqueTags(uniqueTags)
+    }
+    f()
+  }, [])
+
   return (
     <form className="image-gallery-tagger">
-      <ul>
-        <li>Tag 1</li>
-        <li>Tag 2</li>
-      </ul>
-      <textarea rows="4" cols="120"
-                value={tagsInput}
-                onChange={event => setTagsInput(event.target.value)} />
+      <div className="image-gallery-tagger-content">
+        <textarea rows="4"
+                  value={tagsInput}
+                  onChange={event => setTagsInput(event.target.value)} />
+        <ul>
+          {uniqueTags.map(tag => (
+            <li key={tag}>
+              <a href="javascript:void(0)" onClick={() => {
+                const tags = splitToTags(tagsInput)
+                if (tags.indexOf(tag) < 0) {
+                  tags.push(tag)
+                }
+                setTagsInput(joinToTags(tags))
+              }}>
+                {tag}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
       <div>
+        <button type="button"
+                onClick={() => setTagsInput('')}>
+          Clear input area
+        </button>
         <button type="button"
                 onClick={addTags}
                 disable={isProcessing}>
