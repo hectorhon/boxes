@@ -36,6 +36,25 @@ th, td {
         }
 
         .image-gallery-tagger {
+            .image-gallery-tagger-content {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+                grid-gap: 10px;
+                ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                    li {
+                        display: inline;
+                        &:after {
+                            content: ", ";
+                        }
+                        &:last-child:after {
+                            content: "";
+                        }
+                    }
+                }
+            }
         }
     }
 

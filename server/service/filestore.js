@@ -16,6 +16,10 @@ async function searchTitleOrPath(searchText, pageSize, pageNumber) {
   return { files, total }
 }
 
+async function listUniqueTags() {
+  return repo.selectDistinctTags()
+}
+
 async function add(fileEntry) {
   const { title, path: relPath, mimeType, entryDate, meta } = fileEntry
   await repo.insert({
@@ -107,6 +111,7 @@ async function removeTagsFromImages(imageIds, tagsToAdd) {
 module.exports = {
   list,
   searchTitleOrPath,
+  listUniqueTags,
   add,
   addImage,
   generateThumbnail,

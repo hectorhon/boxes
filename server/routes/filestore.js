@@ -65,6 +65,11 @@ router.post('/api/filestore/newEntry', wrap(async (req, res) => {
   res.status(200).end()
 }))
 
+router.get('/api/filestore/uniqueTags', wrap(async (_, res) => {
+  const uniqueTags = await filestore.listUniqueTags()
+  res.json(uniqueTags)
+}))
+
 router.get('/filestore/images', wrap(async (_, res) => {
   res.render('filestore/images', {
     title: 'Images',
