@@ -70,7 +70,7 @@ function ImageGalleryTagger(props) {
                   value={tagsInput}
                   onChange={event => setTagsInput(event.target.value)} />
         <ul>
-          {uniqueTags.map(tag => (
+          {uniqueTags.map(({tag, count}) => (
             <li key={tag}>
               <a href="javascript:void(0)" onClick={() => {
                 const tags = splitToTags(tagsInput)
@@ -79,7 +79,7 @@ function ImageGalleryTagger(props) {
                 }
                 setTagsInput(joinToTags(tags))
               }}>
-                {tag}
+                {tag} ({count})
               </a>
             </li>
           ))}
