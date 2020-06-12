@@ -38,11 +38,12 @@ async function countTitleOrPathLike(searchText) {
   return result.rows[0].count
 }
 
-async function selectDistinctTags() {
+async function selectDistinctTagsWithCount() {
   const result = await db.query(
-    'select distinct unnest(tags) as tag from boxes_filestore'
+    'select unnest(tags) as tag, count(*) from boxes_filestore group by tag ' +
+      'order by count desc'
   )
-  return result.rows.map(row => row.tag)
+  return result.rows
 }
 
 async function selectImageById(id) {
@@ -140,7 +141,7 @@ module.exports = {
   selectAll,
   selectTitleOrPathLike,
   countTitleOrPathLike,
-  selectDistinctTags,
+  selectDistinctTagsWithCount,
   selectImageById,
   selectNextImage,
   selectPreviousImage,

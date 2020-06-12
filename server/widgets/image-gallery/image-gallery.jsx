@@ -117,6 +117,8 @@ function ImageGallery(props) {
             setSelectedImageIds([])
             if (isSelectMode) {
               setIsTaggerVisible(false)
+            } else {
+              setIsTaggerVisible(true)
             }
             setIsSelectMode(!isSelectMode)
           }}>

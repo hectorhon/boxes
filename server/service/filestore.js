@@ -17,7 +17,7 @@ async function searchTitleOrPath(searchText, pageSize, pageNumber) {
 }
 
 async function listUniqueTags() {
-  return repo.selectDistinctTags()
+  return repo.selectDistinctTagsWithCount()
 }
 
 async function add(fileEntry) {
