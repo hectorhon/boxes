@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 function ImageViewer(props) {
-  const { imageId: id, rootPath } = props
+  const { imageId: id, rootPath, thumbnailsPath } = props
 
   const [image, setImage] = useState()
   const [tagsInput, setTagsInput] = useState('')
@@ -20,9 +20,11 @@ function ImageViewer(props) {
     <div className='image-viewer'>
       <div className="img-container">
         {image &&
-         <img title={image.name}
-              alt={image.name}
-              src={rootPath + image.path} />
+         <a href={rootPath + image.path}>
+           <img title={image.name}
+                alt={image.name}
+                src={thumbnailsPath + image.path} />
+         </a>
         }
       </div>
       {image &&

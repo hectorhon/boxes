@@ -46,7 +46,7 @@ async function generateThumbnail(relativeImagePath) {
   }
   await sharp(absolutePath)
     .rotate()  // Auto orient based on EXIF orientation tag and remove the tag
-    .resize(192, 192, {
+    .resize(512, 512, {
       fit: 'inside',
     })
     .toFile(absoluteThumbnailsPath)
