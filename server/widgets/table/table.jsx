@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+
+import useDebounce from '../useDebounce.jsx'
 
 async function getData(dataSource, searchText, pageSize = 10, pageNumber = 1) {
   if (typeof dataSource === 'function') {
@@ -41,13 +43,14 @@ function Table(props) {
   const [pageNumber, setPageNumber] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [searchText, setSearchText] = useState('')
+  const debouncedSearchText = useDebounce(searchText, 250)
 
   const [tableMinHeight, setTableMinHeight] = useState(0)
   const tableWrapperRef = useRef()
 
   useEffect(() => {
     async function f() {
-      const d = await getData(dataSource, searchText, pageSize, pageNumber)
+      const d = await getData(dataSource, debouncedSearchText, pageSize, pageNumber)
       setData(d)
       setTotalPages(Math.max(1, Math.ceil(d.length / pageSize)))
       if (tableMinHeight === 0) {
@@ -56,7 +59,7 @@ function Table(props) {
       }
     }
     f()
-  }, [pageSize, pageNumber, searchText])
+  }, [pageSize, pageNumber, debouncedSearchText])
 
   return (
     <div>

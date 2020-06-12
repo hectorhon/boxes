@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import classNames from 'classnames'
 
+import useDebounce from '../useDebounce.jsx'
+
 function ExtendedSelect(props) {
   const {
     placeholder,
@@ -14,24 +16,22 @@ function ExtendedSelect(props) {
   const [selectedSuggestion, setSelectedSuggestion] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    onChange(query)
-  }, [query])
-
-  const timeoutIdRef = useRef(null)
+  const debouncedQuery = useDebounce(query, 250)
 
   useEffect(() => {
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current)
-    }
-    timeoutIdRef.current = setTimeout(async () => {
+    onChange(debouncedQuery)
+  }, [debouncedQuery])
+
+  useEffect(() => {
+    async function f() {
       setIsLoading(true)
-      const response = await dataSource(query)
+      const response = await dataSource(debouncedQuery)
       setIsLoading(false)
       setSelectedSuggestion(null)
       setSuggestions(response)
-    }, 250)
-  }, [query])
+    }
+    f()
+  }, [debouncedQuery])
 
   const containerRef = useRef(null)
 

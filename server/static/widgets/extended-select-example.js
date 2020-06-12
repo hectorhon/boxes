@@ -7,9 +7,11 @@ const allTags = [
 ]
 
 function queryTags(query) {
+  console.log('     querying', query)
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       const matches = allTags.filter(tag => tag.indexOf(query.trim()) >= 0)
+      console.log('done querying', query)
       resolve(matches)
     }, 1000)
   })
