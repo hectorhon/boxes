@@ -62,7 +62,7 @@ async function addImage(fileEntry) {
 
   // Guess mimeType if not provided
   const absolutePath = path.join(config.FILESTORE_PATH, relPath)
-  const mimeType = fileEntry.mimeType ||  mime.lookup(absolutePath)
+  const mimeTypeToUse = fileEntry.mimeType ||  mime.lookup(absolutePath)
 
   // Generate thumbnail
   await generateThumbnail(relPath)
@@ -71,7 +71,7 @@ async function addImage(fileEntry) {
   await repo.insert({
     title,
     path: relPath,
-    mimeType,
+    mimeType: mimeTypeToUse,
     entryDate,
     thumbnailPath: relPath,
     meta,
