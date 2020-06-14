@@ -1,15 +1,13 @@
 const express = require('express')
-const socketio = require('socket.io')
 
 const router = express.Router()
 
-function setup(server) {
-  const io = socketio(server)
-  io.on('connection', socket => {
+function setup(ioChat) {
+  ioChat.on('connection', socket => {
     console.log('a socket connected', socket.id)
     socket.on('chat message', message => {
       console.log('chat message: ' + message)
-      io.emit('chat message', `${socket.id}: ${message}`)
+      ioChat.emit('chat message', `${socket.id}: ${message}`)
     })
   })
 }
@@ -23,7 +21,7 @@ router.get('/chat', (_, res) => {
   })
 })
 
-module.exports = function(server) {
-  setup(server)
+module.exports = function(ioChat) {
+  setup(ioChat)
   return router
 }
