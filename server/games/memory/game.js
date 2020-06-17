@@ -103,8 +103,9 @@ class Game {
       if (player.selectedCards.length < 2) {
         card.isSelected = true
         player.selectedCards.push(card)
-        player.client.showCardValue(cardId, card.value)
-        // TODO show value for other players too
+        this.players.forEach(player_ => {
+          player_.client.showCardValue(cardId, card.value, player.color)
+        })
       } else {
         // do nothing for now
       }
@@ -136,7 +137,9 @@ class Game {
         })
         player.selectedCards.length = 0
       } else { // wrong match
-        player.client.informWrongMatch(card1.id, card2.id)
+        this.players.forEach(player_ => {
+          player_.client.informWrongMatch(card1.id, card2.id)
+        })
         card1.isSelected = false
         card2.isSelected = false
         player.selectedCards.length = 0

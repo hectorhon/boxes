@@ -107,9 +107,9 @@ class App {
       this.app.stage.addChild(card.sprite)
     })
 
-    this.socket.on('showCardValue', (cardId, value) => {
+    this.socket.on('showCardValue', (cardId, value, color) => {
       const card = this.cards.find(card => card.id === cardId)
-      card.showValue(value, this.playerColor)
+      card.showValue(value, color)
     })
 
     this.socket.on('hideCardValue', cardId => {

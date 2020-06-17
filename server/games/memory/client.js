@@ -41,8 +41,8 @@ class Client {
     this.socket.emit('addCard', id, x, y, width, height)
   }
 
-  showCardValue(cardId, value) {
-    this.socket.emit('showCardValue', cardId, value)
+  showCardValue(cardId, value, color) {
+    this.socket.emit('showCardValue', cardId, value, color)
   }
 
   hideCardValue(cardId) {
