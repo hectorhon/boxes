@@ -16,7 +16,12 @@ class Client {
     socket.on('joinGame', gameId => {
       // this.game = Game.games.find(game => game.id === gameId)
       this.game = Game.games[0]
-      this.playerId = this.game.addPlayer(this)
+      const { playerId, playerColor } = this.game.addPlayer(this)
+      this.playerId = playerId
+      socket.emit('joinedGame', {
+        nickname: this.nickname,
+        playerColor,
+      })
     })
 
     socket.on('cardMouseDown', cardId => {
@@ -42,6 +47,22 @@ class Client {
 
   hideCardValue(cardId) {
     this.socket.emit('hideCardValue', cardId)
+  }
+
+  informMatchFound(
+    playerId, playerNickname, playerColor,
+    card1Id, card2Id,
+    value
+  ) {
+    this.socket.emit(
+      'matchFound',
+      playerId, playerNickname, playerColor,
+      card1Id, card2Id, value
+    )
+  }
+
+  informWrongMatch(card1Id, card2Id) {
+    this.socket.emit('wrongMatch', card1Id, card2Id)
   }
 }
 

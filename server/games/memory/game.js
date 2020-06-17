@@ -1,10 +1,13 @@
 const uuid = require('uuid')
 
 class Player {
+  static colors = ['0xFF0000', '0x00FF00']
   id
   client
   nickname
+  color
   selectedCards = []
+  matchesFound = []
 
   constructor(client) {
     this.id = uuid.v4()
@@ -22,6 +25,7 @@ class Card {
   height
   visibleTo = []
   isSelected = false
+  isMatched = false
 
   constructor(value, x, y, width, height) {
     this.id = uuid.v4()
@@ -50,11 +54,15 @@ class Game {
       return
     }
     const player = new Player(client)
+    player.color = Player.colors[this.players.length % Player.colors.length]
     this.players.push(player)
     if (this.players.length >= numPlayers) {
       this.prepare()
     }
-    return player.id
+    return {
+      playerId: player.id,
+      playerColor: player.color,
+    }
   }
 
   announce(message) {
@@ -92,9 +100,14 @@ class Game {
     const card = this.cards.find(card => card.id === cardId)
     const player = this.players.find(player => player.id === playerId)
     if (!card.isSelected) {
-      card.isSelected = true
-      player.selectedCards.push(card)
-      player.client.showCardValue(cardId, card.value)
+      if (player.selectedCards.length < 2) {
+        card.isSelected = true
+        player.selectedCards.push(card)
+        player.client.showCardValue(cardId, card.value)
+        // TODO show value for other players too
+      } else {
+        // do nothing for now
+      }
     } else if (player.selectedCards.map(card => card.id).includes(cardId)) {
       card.isSelected = false
       const index = player.selectedCards.map(card => card.id).indexOf(card.id)
@@ -102,6 +115,34 @@ class Game {
       player.client.hideCardValue(cardId)
     } else {  // card is selected by another player
       // do nothing for now
+    }
+    this.checkForMatches(player)
+  }
+
+  checkForMatches(player) {
+    if (player.selectedCards.length == 2) {
+      const card1 = player.selectedCards[0]
+      const card2 = player.selectedCards[1]
+      if (card1.value === card2.value) {
+        card1.isMatched = true
+        card2.isMatched = true
+        player.matchesFound.push([card1, card2])
+        this.players.forEach(player_ => {
+          player_.client.informMatchFound(
+            player.id, player.nickname, player.color,
+            card1.id, card2.id,
+            card1.value
+          )
+        })
+        player.selectedCards.length = 0
+      } else { // wrong match
+        player.client.informWrongMatch(card1.id, card2.id)
+        card1.isSelected = false
+        card2.isSelected = false
+        player.selectedCards.length = 0
+      }
+    } else {
+      // no matches
     }
   }
 
