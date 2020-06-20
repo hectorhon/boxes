@@ -16,12 +16,8 @@ class Client {
     socket.on('joinGame', gameId => {
       // this.game = Game.games.find(game => game.id === gameId)
       this.game = Game.games[0]
-      const { playerId, playerColor } = this.game.addPlayer(this)
+      const playerId = this.game.addPlayer(this)
       this.playerId = playerId
-      socket.emit('joinedGame', {
-        nickname: this.nickname,
-        playerColor,
-      })
     })
 
     socket.on('cardMouseDown', cardId => {
@@ -37,6 +33,14 @@ class Client {
     this.socket.emit('msg', msg)
   }
 
+  confirmJoin(playerId, playerNickname, playerColor, playerScore) {
+    this.socket.emit('joinedGame', playerId, playerNickname, playerColor, playerScore)
+  }
+
+  informJoin(playerId, playerNickname, playerColor, playerScore) {
+    this.socket.emit('alsoJoinedGame', playerId, playerNickname, playerColor, playerScore)
+  }
+
   addCard(id, x, y, width, height) {
     this.socket.emit('addCard', id, x, y, width, height)
   }
@@ -50,13 +54,12 @@ class Client {
   }
 
   informMatchFound(
-    playerId, playerNickname, playerColor,
-    card1Id, card2Id,
-    value
+    playerId, playerNickname, playerColor, playerScore,
+    card1Id, card2Id, value
   ) {
     this.socket.emit(
       'matchFound',
-      playerId, playerNickname, playerColor,
+      playerId, playerNickname, playerColor, playerScore,
       card1Id, card2Id, value
     )
   }

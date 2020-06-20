@@ -8,6 +8,7 @@ class Player {
   color
   selectedCards = []
   matchesFound = []
+  score = 0
 
   constructor(client) {
     this.id = uuid.v4()
@@ -53,16 +54,21 @@ class Game {
       client.sendErrorMessage('Game is already full.')
       return
     }
+
     const player = new Player(client)
     player.color = Player.colors[this.players.length % Player.colors.length]
     this.players.push(player)
+    player.client.confirmJoin(player.id, player.nickname, player.color, player.score)
+    this.players.slice(0, -1).forEach(player_ => {
+      player.client.informJoin(player_.id, player_.nickname, player_.color, player_.score)
+      player_.client.informJoin(player.id, player.nickname, player.color, player.score)
+    })
+
     if (this.players.length >= numPlayers) {
       this.prepare()
     }
-    return {
-      playerId: player.id,
-      playerColor: player.color,
-    }
+
+    return player.id
   }
 
   announce(message) {
@@ -128,14 +134,15 @@ class Game {
         card1.isMatched = true
         card2.isMatched = true
         player.matchesFound.push([card1, card2])
+        player.selectedCards.length = 0
+        player.score += 10
         this.players.forEach(player_ => {
           player_.client.informMatchFound(
-            player.id, player.nickname, player.color,
+            player.id, player.nickname, player.color, player.score,
             card1.id, card2.id,
             card1.value
           )
         })
-        player.selectedCards.length = 0
       } else { // wrong match
         this.players.forEach(player_ => {
           player_.client.informWrongMatch(card1.id, card2.id)
