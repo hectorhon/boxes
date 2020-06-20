@@ -24,9 +24,9 @@ class Card {
   y
   width
   height
-  visibleTo = []
   isSelected = false
   isMatched = false
+  isDisabled = false
 
   constructor(value, x, y, width, height) {
     this.id = uuid.v4()
@@ -105,7 +105,10 @@ class Game {
   handleCardMouseDown(playerId, cardId) {
     const card = this.cards.find(card => card.id === cardId)
     const player = this.players.find(player => player.id === playerId)
-    if (!card.isSelected) {
+    if (card.isDisabled) {
+      // card gets disabled on wrong match
+      return
+    } else if (!card.isSelected) {
       if (player.selectedCards.length < 2) {
         card.isSelected = true
         player.selectedCards.push(card)
@@ -113,7 +116,7 @@ class Game {
           player_.client.showCardValue(cardId, card.value, player.color)
         })
       } else {
-        // do nothing for now
+        // at most can select two cards; do nothing for now
       }
     } else if (player.selectedCards.map(card => card.id).includes(cardId)) {
       card.isSelected = false
@@ -144,12 +147,18 @@ class Game {
           )
         })
       } else { // wrong match
+        card1.isDisabled = true
+        card2.isDisabled = true
         this.players.forEach(player_ => {
           player_.client.informWrongMatch(card1.id, card2.id)
         })
-        card1.isSelected = false
-        card2.isSelected = false
-        player.selectedCards.length = 0
+        setTimeout(() => {
+          card1.isSelected = false
+          card2.isSelected = false
+          card1.isDisabled = false
+          card2.isDisabled = false
+          player.selectedCards.length = 0
+        }, 1000)
       }
     } else {
       // no matches

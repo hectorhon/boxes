@@ -95,15 +95,19 @@ class Card {
   }
 
   showValue(value, cardColor) {
-    const text = new PIXI.Text(value, {
-      fill: 0xFFFFFF,
-      align: 'center',
-    })
-    text.anchor.set(0.5, 0.5)
-    text.x = this.width / 2
-    text.y = this.height / 2
-    this.sprite.addChild(text)
-    this.text = text
+    if (!this.text) {
+      const text = new PIXI.Text(value, {
+        fill: 0xFFFFFF,
+        align: 'center',
+      })
+      text.anchor.set(0.5, 0.5)
+      text.x = this.width / 2
+      text.y = this.height / 2
+      this.sprite.addChild(text)
+      this.text = text
+    } else {
+      this.text.text = value
+    }
     this.changeColor(cardColor)
   }
 
