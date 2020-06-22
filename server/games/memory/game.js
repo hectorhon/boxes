@@ -82,8 +82,8 @@ class Game {
     // const gridYCount = 4
     const gridXStart = 20
     const gridYStart = 20
-    const spacingX = 20
-    const spacingY = 20
+    const spacingX = 30
+    const spacingY = 30
     const cardWidth = 60
     const cardHeight = 80
     for (let i = 0; i < numPairs; i++) {
@@ -105,9 +105,9 @@ class Game {
   handleCardMouseDown(playerId, cardId) {
     const card = this.cards.find(card => card.id === cardId)
     const player = this.players.find(player => player.id === playerId)
-    if (card.isDisabled) {
+    if (card.isDisabled || card.isMatched) {
       // card gets disabled on wrong match
-      return
+      // card that has been matched can't be selected anymore
     } else if (!card.isSelected) {
       if (player.selectedCards.length < 2) {
         card.isSelected = true
@@ -115,6 +115,7 @@ class Game {
         this.players.forEach(player_ => {
           player_.client.showCardValue(cardId, card.value, player.color)
         })
+        this.checkForMatches(player)
       } else {
         // at most can select two cards; do nothing for now
       }
@@ -122,11 +123,12 @@ class Game {
       card.isSelected = false
       const index = player.selectedCards.map(card => card.id).indexOf(card.id)
       player.selectedCards.splice(index, 1)
-      player.client.hideCardValue(cardId)
+      this.players.forEach(player_ => {
+        player_.client.hideCardValue(cardId)
+      })
     } else {  // card is selected by another player
       // do nothing for now
     }
-    this.checkForMatches(player)
   }
 
   checkForMatches(player) {

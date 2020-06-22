@@ -64,6 +64,8 @@ class Card {
   width
   height
   sprite
+  text
+  borders = []
 
   constructor(id, x, y, width, height, onMouseDown) {
     this.id = id
@@ -121,8 +123,63 @@ class Card {
     }
   }
 
+  showBorders(color) {
+    const padding = 4
+    const borderWidth = 4
+
+    const borderLeft = new PIXI.Graphics()
+    borderLeft.x = 0 - padding - borderWidth
+    borderLeft.y = 0 - padding - borderWidth
+    borderLeft.beginFill(color)
+    borderLeft.drawRect(0, 0, borderWidth, 2*(borderWidth+padding) + this.height)
+    borderLeft.endFill()
+    this.sprite.addChild(borderLeft)
+    this.borders[0] = borderLeft
+
+    const borderRight = new PIXI.Graphics()
+    borderRight.x = this.width + padding
+    borderRight.y = 0 - padding - borderWidth
+    borderRight.beginFill(color)
+    borderRight.drawRect(0, 0, borderWidth, 2*(borderWidth+padding) + this.height)
+    borderRight.endFill()
+    this.sprite.addChild(borderRight)
+    this.borders[1] = borderRight
+
+    const borderTop = new PIXI.Graphics()
+    borderTop.x = 0 - padding
+    borderTop.y = 0 - padding - borderWidth
+    borderTop.beginFill(color)
+    borderTop.drawRect(0, 0, 2*padding + this.width, borderWidth)
+    borderTop.endFill()
+    this.sprite.addChild(borderTop)
+    this.borders[3] = borderTop
+
+    const borderBottom = new PIXI.Graphics()
+    borderBottom.x = 0 - padding
+    borderBottom.y = this.height + padding
+    borderBottom.beginFill(color)
+    borderBottom.drawRect(0, 0, 2*padding + this.width, borderWidth)
+    borderBottom.endFill()
+    this.sprite.addChild(borderBottom)
+    this.borders[4] = borderBottom
+  }
+
+  hideBorders() {
+    for (let i = 0; i < this.borders.length; i++) {
+      const index = this.sprite.children.indexOf(this.borders[i])
+      if (index >= 0) {
+        const border = this.sprite.removeChildAt(index)
+        border.destroy()
+        this.borders[i] = null
+      }
+    }
+  }
+
   markAsMatched(value, playerColor) {
     this.hideValue()
+    setTimeout(() => {  // TODO some animation?
+      this.hideBorders()
+    }, 1000)
     this.showValue(value, playerColor)
   }
 }
@@ -193,11 +250,13 @@ class App {
     this.socket.on('showCardValue', (cardId, value, color) => {
       const card = this.cards.find(card => card.id === cardId)
       card.showValue(value, color)
+      card.showBorders(color)
     })
 
     this.socket.on('hideCardValue', cardId => {
       const card = this.cards.find(card => card.id === cardId)
       card.hideValue()
+      card.hideBorders()
     })
 
     this.socket.on('matchFound', (
@@ -217,7 +276,9 @@ class App {
       const card2 = this.cards.find(card => card.id === card2Id)
       setTimeout(() => {  // TODO some animation?
         card1.hideValue()
+        card1.hideBorders()
         card2.hideValue()
+        card2.hideBorders()
       }, 1000)
     })
   }
