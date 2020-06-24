@@ -113,7 +113,8 @@ class Game {
         card.isSelected = true
         player.selectedCards.push(card)
         this.players.forEach(player_ => {
-          player_.client.showCardValue(cardId, card.value, player.color)
+          player_.client.showCardSelected(cardId, player.color)
+          player_.client.showCardValue(cardId, card.value)
         })
         this.checkForMatches(player)
       } else {
@@ -125,6 +126,7 @@ class Game {
       player.selectedCards.splice(index, 1)
       this.players.forEach(player_ => {
         player_.client.hideCardValue(cardId)
+        player_.client.hideCardSelected(cardId)
       })
     } else {  // card is selected by another player
       // do nothing for now

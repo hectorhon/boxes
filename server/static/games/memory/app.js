@@ -96,7 +96,7 @@ class Card {
     rectangle.endFill()
   }
 
-  showValue(value, cardColor) {
+  showValue(value) {
     if (!this.text) {
       const text = new PIXI.Text(value, {
         fill: 0xFFFFFF,
@@ -110,7 +110,6 @@ class Card {
     } else {
       this.text.text = value
     }
-    this.changeColor(cardColor)
   }
 
   hideValue() {
@@ -119,7 +118,6 @@ class Card {
       const text = this.sprite.removeChildAt(index)
       text.destroy()
       this.text = null
-      this.changeColor(0x000000)
     }
   }
 
@@ -247,16 +245,26 @@ class App {
       this.app.stage.addChild(card.sprite)
     })
 
-    this.socket.on('showCardValue', (cardId, value, color) => {
+    this.socket.on('showCardSelected', (cardId, color) => {
       const card = this.cards.find(card => card.id === cardId)
-      card.showValue(value, color)
       card.showBorders(color)
+      card.changeColor(color)
+    })
+
+    this.socket.on('showCardValue', (cardId, value) => {
+      const card = this.cards.find(card => card.id === cardId)
+      card.showValue(value)
+    })
+
+    this.socket.on('hideCardSelected', cardId => {
+      const card = this.cards.find(card => card.id === cardId)
+      card.hideBorders()
+      card.changeColor(0x000000)
     })
 
     this.socket.on('hideCardValue', cardId => {
       const card = this.cards.find(card => card.id === cardId)
       card.hideValue()
-      card.hideBorders()
     })
 
     this.socket.on('matchFound', (
@@ -277,8 +285,10 @@ class App {
       setTimeout(() => {  // TODO some animation?
         card1.hideValue()
         card1.hideBorders()
+        card1.changeColor(0x000000)
         card2.hideValue()
         card2.hideBorders()
+        card2.changeColor(0x000000)
       }, 1000)
     })
   }
