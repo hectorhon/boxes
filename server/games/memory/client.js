@@ -75,6 +75,10 @@ class Client {
   informWrongMatch(card1Id, card2Id) {
     this.socket.emit('wrongMatch', card1Id, card2Id)
   }
+
+  informGameOver(winners) {
+    this.socket.emit('gameOver', winners)
+  }
 }
 
 module.exports = Client

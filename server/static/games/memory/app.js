@@ -55,6 +55,18 @@ class Ui {
     const scoreText = row[2]
     scoreText.text = newScore.toString()
   }
+
+  showGameOverText(text) {
+    const pixiText = new PIXI.Text(text, {
+      fill: 0xFFFFFF,
+      align: 'center',
+      fontSize: 72,
+    })
+    pixiText.anchor.set(0.5, 0.5)
+    pixiText.x = 400
+    pixiText.y = 300
+    this.sprite.addChild(pixiText)
+  }
 }
 
 class Card {
@@ -290,6 +302,16 @@ class App {
         card2.hideBorders()
         card2.changeColor(0x000000)
       }, 1000)
+    })
+
+    this.socket.on('gameOver', winners => {
+      if (winners.length === 1) {
+        this.ui.showGameOverText(`Game over!
+${winners[0].nickname} won!`)
+      } else {
+        this.ui.showGameOverText(`Game over!
+It's a tie - ${winners.map(winner => winner.nickname).join(' & ')}`)
+      }
     })
   }
 

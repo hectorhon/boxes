@@ -117,6 +117,7 @@ class Game {
           player_.client.showCardValue(cardId, card.value)
         })
         this.checkForMatches(player)
+        this.checkGameOver()
       } else {
         // at most can select two cards; do nothing for now
       }
@@ -166,6 +167,30 @@ class Game {
       }
     } else {
       // no matches
+    }
+  }
+
+  checkGameOver() {
+    if (this.cards.every(card => card.isMatched)) {
+      let winners = []  // can be more than one i.e. tie
+      this.players.forEach(player => {
+        if (winners.length === 0) {
+          winners.push(player)
+          return
+        }
+        if (player.score > winners[0].score) {
+          winners.length = 0
+          winners.push(player)
+        } else if (player.score == winners[0].score) {
+          winners.push(player)
+        }
+      })
+      this.players.forEach(player => {
+        player.client.informGameOver(winners.map(winner => ({
+          id: winner.id,
+          nickname: winner.nickname,
+        })))
+      })
     }
   }
 
