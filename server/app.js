@@ -11,6 +11,7 @@ const widgetsRouter = require('./routes/widgets')
 const filestoreRouter = require('./routes/filestore')
 const thumbnailsRouter = require('./routes/thumbnails')
 const chatRouter = require('./routes/chat')
+const gamesRouter = require('./routes/games')
 
 const app = express()
 const port = 3000
@@ -52,6 +53,7 @@ app.use('/filestore', express.static(config.FILESTORE_PATH))
 const server = http.createServer(app)
 const io = socketio(server)
 app.use(chatRouter(io.of('/chat')))
+app.use(gamesRouter(io))
 
 server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
