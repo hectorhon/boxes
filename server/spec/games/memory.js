@@ -1,0 +1,240 @@
+const chai = require('chai')
+const sinon = require('sinon')
+const sinonChai = require('sinon-chai')
+const uuid = require('uuid')
+
+chai.use(sinonChai)
+const expect = chai.expect
+
+const MemoryGame = require('../../games/memory')
+
+function getPlayerSelectedCardIds(game, playerId) {
+  const player = game.players.find(player => player.id === playerId)
+  return player.selectedCards.map(card => card.id)
+}
+
+describe('Memory game', () => {
+
+  describe('#constructor()', () => {
+    let game
+    const numPairs = 5
+
+    before(() => {
+      game = new MemoryGame({ numPairs })
+    })
+
+    it('should create correct number of cards', () => {
+      expect(game.cards).to.have.lengthOf(numPairs * 2)
+    })
+
+    it('should create correct pairs of cards', () => {
+      const valuesCount = {}
+      game.cards.forEach(card => {
+        if (!valuesCount[card.value]) {
+          valuesCount[card.value] = 1
+        } else {
+          valuesCount[card.value] += 1
+        }
+      })
+      expect(Object.keys(valuesCount)).to.have.lengthOf(numPairs)
+      for (let value in valuesCount) {
+        expect(valuesCount[value]).to.equal(2)
+      }
+    })
+
+    it('should shuffle the cards')
+  })
+
+  describe('#addPlayer()', () => {
+    let game, emit
+    const playerId = uuid.v4()
+    const playerNickname = 'james'
+
+    before(() => {
+      game = new MemoryGame({ numPairs: 5 })
+      emit = sinon.spy(game, 'emit')
+      game.addPlayer(playerId, playerNickname)
+    })
+
+    it('should add player', () => {
+      expect(game.players.map(player => player.id)).to.include(playerId)
+    })
+
+    it('should emit playerJoined event', () => {
+      expect(emit).to.have.been.calledWith('playerJoined', {
+        id: playerId,
+        nickname: playerNickname,
+      })
+    })
+  })
+
+  describe('#tryPlayerSelectCard()', () => {
+    let game, emit, randomCardIndex, randomCard
+    const player1Id = uuid.v4()
+    const player1Nickname = 'james'
+    const player2Id = uuid.v4()
+    const player2Nickname = 'bill'
+
+    beforeEach(() => {
+      game = new MemoryGame({ numPairs: 5 })
+      emit = sinon.spy(game, 'emit')
+      game.addPlayer(player1Id, player1Nickname)
+      game.addPlayer(player2Id, player2Nickname)
+      randomCardIndex = Math.floor(Math.random() * game.cards.length)
+      randomCard = game.cards[randomCardIndex]
+    })
+
+    describe('card has already been matched', () => {
+      beforeEach(() => {
+        card1a = game.cards[0]
+        card1b = game.cards.find((card, index) => card.value === card1a.value && index != 0)
+        game.tryPlayerSelectCard(player1Id, card1a.id)
+        game.tryPlayerSelectCard(player1Id, card1b.id)
+        game.tryPlayerSelectCard(player1Id, card1a.id)
+      })
+
+      it('should fail to select the card', () => {
+        expect(getPlayerSelectedCardIds(game, player1Id)).to.not.include(card1a.id)
+        expect(getPlayerSelectedCardIds(game, player1Id)).to.not.include(card1b.id)
+      })
+
+      it('should emit playerSelectCardFailed event', () => {
+        expect(emit).to.have.been.calledWith('playerSelectCardFailed', {
+          playerId: player1Id,
+          cardId: card1a.id,
+        })
+      })
+    })
+
+    describe("card isn't selected by anyone else", () => {
+      beforeEach(() => {
+        game.tryPlayerSelectCard(player1Id, randomCard.id)
+      })
+
+      it('should select the card', () => {
+        expect(getPlayerSelectedCardIds(game, player1Id)).to.include(randomCard.id)
+      })
+
+      it('should emit playerSelectedCard event', () => {
+        expect(emit).to.have.been.calledWith('playerSelectedCard', {
+          playerId: player1Id,
+          cardId: randomCard.id,
+        })
+      })
+    })
+
+    describe('card is selected by someone else', () => {
+      beforeEach(() => {
+        game.tryPlayerSelectCard(player1Id, randomCard.id)
+        game.tryPlayerSelectCard(player2Id, randomCard.id)
+      })
+
+      it('should fail to select the card', () => {
+        expect(getPlayerSelectedCardIds(game, player2Id)).to.not.include(randomCard.id)
+      })
+
+      it('should emit playerSelectCardFailed event', () => {
+        expect(emit).to.have.been.calledWith('playerSelectCardFailed', {
+          playerId: player2Id,
+          cardId: randomCard.id,
+        })
+      })
+    })
+
+    describe('card is currently selected by same player', () => {
+      beforeEach(() => {
+        game.tryPlayerSelectCard(player1Id, randomCard.id)
+        game.tryPlayerSelectCard(player1Id, randomCard.id)
+      })
+
+      it('should deselect the card', () => {
+        expect(getPlayerSelectedCardIds(game, player1Id)).to.not.include(randomCard.id)
+      })
+
+      it('should emit playerDeselectedCard event', () => {
+        expect(emit).to.have.been.calledWith('playerDeselectedCard', {
+          playerId: player1Id,
+          cardId: randomCard.id,
+        })
+      })
+    })
+
+    it('should trigger checking for matches after player selected 2 cards', () => {
+      const checkForMatches = sinon.spy(game, '_checkForMatches')
+      game.tryPlayerSelectCard(player1Id, randomCard.id)
+      expect(checkForMatches).to.not.have.been.called
+      const randomCardIndex2 = (randomCardIndex + 1) % game.cards.length
+      const randomCard2 = game.cards[randomCardIndex2]
+      game.tryPlayerSelectCard(player1Id, randomCard2.id)
+      const lastCall = checkForMatches.getCall(-1)
+      expect(lastCall.args[0]).to.have.property('id', player1Id)
+    })
+  })
+
+  describe('#_checkForMatches()', () => {
+    let game, emit, card1a, card1b
+    const player1Id = uuid.v4()
+    const player1Nickname = 'james'
+
+    beforeEach(() => {
+      game = new MemoryGame({ numPairs: 5 })
+      card1a = game.cards[0]
+      card1b = game.cards.find((card, index) => card.value === card1a.value && index != 0)
+      card2 = game.cards.find(card => card.value !== card1a.value)
+      emit = sinon.spy(game, 'emit')
+      game.addPlayer(player1Id, player1Nickname)
+    })
+
+    describe('match is present', () => {
+      beforeEach(() => {
+        game.tryPlayerSelectCard(player1Id, card1a.id)
+        game.tryPlayerSelectCard(player1Id, card1b.id)
+      })
+
+      it('should mark the cards as matched', () => {
+        expect(card1a).to.have.property('isMatched', true)
+        expect(card1b).to.have.property('isMatched', true)
+        expect(card2.isMatched).to.not.be.ok
+      })
+
+      it('should emit matchFound event', () => {
+        expect(emit).to.have.been.calledWith('matchFound', {
+          playerId: player1Id,
+          cardIds: [card1a.id, card1b.id],
+          cardValue: card1a.value,
+        })
+      })
+
+      it('should clear player selection', () => {
+        const playerSelectedCardIds = getPlayerSelectedCardIds(game, player1Id)
+        expect(playerSelectedCardIds).to.be.empty
+      })
+    })
+
+    describe('match is not present', () => {
+      beforeEach(() => {
+        game.tryPlayerSelectCard(player1Id, card1a.id)
+        game.tryPlayerSelectCard(player1Id, card2.id)
+      })
+
+      it('should not mark the cards as matched', () => {
+        expect(card1a.isMatched).to.not.be.ok
+        expect(card1b.isMatched).to.not.be.ok
+        expect(card2.isMatched).to.not.be.ok
+      })
+
+      it('should not emit matchFound event', () => {
+        expect(emit).to.not.have.been.calledWith('matchFound')
+      })
+
+      it('should not clear player selection', () => {
+        const playerSelectedCardIds = getPlayerSelectedCardIds(game, player1Id)
+        expect(playerSelectedCardIds).have.lengthOf(2)
+      })
+    })
+  })
+
+  describe('#getStateForPlayer()', () => {
+    it('should return only cards visible to the player')
+  })
+})

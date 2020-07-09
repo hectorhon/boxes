@@ -1,3 +1,5 @@
 node_modules
 static/dist
 static/*.css
+.nyc_output
+coverage
