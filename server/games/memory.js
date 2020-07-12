@@ -5,6 +5,7 @@ class Card {
   id
   value
   selectedBy
+  isMatched
 
   constructor(value) {
     this.id = uuid.v4()
@@ -62,6 +63,7 @@ class Game extends EventEmitter {
         if (hasMatch) {
           player.selectedCards.forEach(card => {
             card.isMatched = true
+            card.selectedBy = null
           })
           player.selectedCards.length = 0
         }
@@ -72,6 +74,40 @@ class Game extends EventEmitter {
       this.emit('playerSelectCardFailed', {
         playerId,
         cardId,
+      })
+    }
+  }
+
+  getStateForPlayer(playerId) {
+    const player = this.players.find(player => player.id === playerId)
+    return {
+      players: this.players.map(player => {
+        if (player.id === playerId) {
+          return {
+            id: player.id,
+            nickname: player.nickname,
+            selectedCards: player.selectedCards,
+          }
+        } else {
+          return  {
+            id: player.id,
+            nickname: player.nickname,
+          }
+        }
+      }),
+      cards: this.cards.map(card => {
+        if (card.isMatched || player.selectedCards.indexOf(card) >= 0) {
+          return {
+            id: card.id,
+            value: card.value,
+            selectedBy: card.selectedBy,
+          }
+        } else {
+          return {
+            id: card.id,
+            selectedBy: card.selectedBy,
+          }
+        }
       })
     }
   }

@@ -208,6 +208,8 @@ describe('Memory game', () => {
       it('should clear player selection', () => {
         const playerSelectedCardIds = getPlayerSelectedCardIds(game, player1Id)
         expect(playerSelectedCardIds).to.be.empty
+        expect(card1a.selectedBy).to.not.be.ok
+        expect(card1b.selectedBy).to.not.be.ok
       })
     })
 
@@ -235,6 +237,44 @@ describe('Memory game', () => {
   })
 
   describe('#getStateForPlayer()', () => {
-    it('should return only cards visible to the player')
+    let game, card1a, card1b, card2a, card2b, card3, card4
+    const player1Id = uuid.v4()
+    const player1Nickname = 'james'
+    const player2Id = uuid.v4()
+    const player2Nickname = 'bill'
+
+    before(() => {
+      game = new MemoryGame({ numPairs: 5 })
+      const uniqueValues = [...new Set(game.cards.map(card => card.value))];
+      [card1a, card1b] = game.cards.filter(card => card.value === uniqueValues[0]);
+      [card2a, card2b] = game.cards.filter(card => card.value === uniqueValues[1]);
+      [card3, _] = game.cards.filter(card => card.value === uniqueValues[2]);
+      [card4, _] = game.cards.filter(card => card.value === uniqueValues[3]);
+      game.addPlayer(player1Id, player1Nickname)
+      game.addPlayer(player2Id, player2Nickname)
+      game.tryPlayerSelectCard(player1Id, card1a.id)
+      game.tryPlayerSelectCard(player1Id, card1b.id)
+      game.tryPlayerSelectCard(player2Id, card2a.id)
+      game.tryPlayerSelectCard(player2Id, card2b.id)
+      game.tryPlayerSelectCard(player1Id, card3.id)
+      game.tryPlayerSelectCard(player2Id, card4.id)
+    })
+
+    it('should return values of only cards selected by the player, not other players', () => {
+      const player1State = game.getStateForPlayer(player1Id)
+      expect(player1State.cards.find(card => card.id === card3.id).value).to.be.a('number')
+      expect(player1State.cards.find(card => card.id === card4.id).value).to.not.be.ok
+
+      const player2State = game.getStateForPlayer(player2Id)
+      expect(player2State.cards.find(card => card.id === card4.id).value).to.be.a('number')
+      expect(player2State.cards.find(card => card.id === card3.id).value).to.not.be.ok
+    })
+
+    it('should return values of all matched cards', () => {
+      const player1State = game.getStateForPlayer(player1Id);
+      [card1a.id, card1b.id, card2a.id, card2b.id].forEach(matchedCardId => {
+        expect(player1State.cards.find(card => card.id === matchedCardId).value).to.be.a('number')
+      })
+    })
   })
 })
