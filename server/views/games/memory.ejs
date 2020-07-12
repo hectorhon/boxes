@@ -1,6 +1,9 @@
 <%- include('/header') %>
 
-<div id="pixi-container-div"></div>
+<div id="pixi-container-div"
+     data-gameid="<%= gameId %>"
+     data-nickname="<%= nickname %>">
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 

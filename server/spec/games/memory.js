@@ -50,7 +50,7 @@ describe('Memory game', () => {
     const playerId = uuid.v4()
     const playerNickname = 'james'
 
-    before(() => {
+    beforeEach(() => {
       game = new MemoryGame({ numPairs: 5 })
       emit = sinon.spy(game, 'emit')
       game.addPlayer(playerId, playerNickname)
@@ -65,6 +65,15 @@ describe('Memory game', () => {
         id: playerId,
         nickname: playerNickname,
       })
+    })
+
+    it("should initialize player state to 'connected'")
+
+    it('should not add player if player has been added', () => {
+      const originalGamePlayersCount = game.players.length
+      game.addPlayer(playerId, playerNickname)
+      expect(game.players).to.have.lengthOf(originalGamePlayersCount)
+      expect(emit).to.have.been.calledOnceWith('playerJoined')
     })
   })
 

@@ -5,7 +5,7 @@ module.exports = {
     'ExtendedSelect': './widgets/extended-select/extended-select.jsx',
     'ImageGallery': './widgets/image-gallery/image-gallery.jsx',
     'ImageViewer': './widgets/image-gallery/image-viewer.jsx',
-    'MemoryGame': './games/memory.js',
+    'MemoryGame': './games/memory-client.js',
   },
   output: {
     filename: '[name].js',
@@ -25,7 +25,19 @@ module.exports = {
             presets: ['@babel/preset-react']
           }
         }
-      }
+      },
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+            plugins: [
+              '@babel/plugin-proposal-class-properties',
+            ]
+          }
+        }
+      },
     ]
   }
 }

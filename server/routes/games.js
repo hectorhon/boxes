@@ -4,7 +4,7 @@ const memoryRouter = require('./games/memory')
 const router = express.Router()
 
 function setup(io) {
-  router.use(memoryRouter(io.of('/games/memory')))
+  router.use(memoryRouter(io))
 }
 
 router.get('/games', (req, res) => {

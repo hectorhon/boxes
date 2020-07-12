@@ -1,5 +1,6 @@
 const http = require('http')
 const express = require('express')
+const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const sassMiddleware = require('node-sass-middleware')
 const path = require('path')
@@ -35,6 +36,7 @@ app.set('view options', {
   root: path.join(__dirname, 'views')
 })
 
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 

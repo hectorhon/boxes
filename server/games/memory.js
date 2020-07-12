@@ -25,11 +25,13 @@ class Player {
 }
 
 class Game extends EventEmitter {
+  id
   cards = []
   players = []
 
   constructor({ numPairs }) {
     super()
+    this.id = uuid.v4()
     for (let pairIndex = 0; pairIndex < numPairs; pairIndex++) {
       for (let i = 0; i < 2; i++) {
         const value = pairIndex // * 2 + i
@@ -40,7 +42,11 @@ class Game extends EventEmitter {
   }
 
   addPlayer(id, nickname) {
-    const player = new Player(id, nickname)
+    let player = this.players.find(player => player.id === id)
+    if (player) {
+      return
+    }
+    player = new Player(id, nickname)
     this.players.push(player)
     this.emit('playerJoined', {
       id: player.id,
@@ -110,6 +116,11 @@ class Game extends EventEmitter {
         }
       })
     }
+  }
+
+  getCardValue(cardId) {
+    const card = this.cards.find(card => card.id === cardId)
+    return card.value
   }
 
   _checkForMatches(player) {
