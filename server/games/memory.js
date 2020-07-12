@@ -118,11 +118,6 @@ class Game extends EventEmitter {
     }
   }
 
-  getCardValue(cardId) {
-    const card = this.cards.find(card => card.id === cardId)
-    return card.value
-  }
-
   _checkForMatches(player) {
     const card1 = player.selectedCards[0]
     const card2 = player.selectedCards[1]
@@ -144,6 +139,7 @@ class Game extends EventEmitter {
     this.emit('playerSelectedCard', {
       playerId: player.id,
       cardId: card.id,
+      cardValue: card.value,
     })
   }
 

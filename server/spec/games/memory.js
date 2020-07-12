@@ -75,6 +75,8 @@ describe('Memory game', () => {
       expect(game.players).to.have.lengthOf(originalGamePlayersCount)
       expect(emit).to.have.been.calledOnceWith('playerJoined')
     })
+
+    it('should emit playerReconnected event if player has been added before')
   })
 
   describe('#tryPlayerSelectCard()', () => {
@@ -128,6 +130,7 @@ describe('Memory game', () => {
         expect(emit).to.have.been.calledWith('playerSelectedCard', {
           playerId: player1Id,
           cardId: randomCard.id,
+          cardValue: randomCard.value,
         })
       })
     })

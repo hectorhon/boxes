@@ -11,7 +11,12 @@ function getGameById(gameId) {
 function createGame(gameOptions) {
   game = new Game(gameOptions)
   games.push(game)
-  return game
+  return game.id
+}
+
+function destroyGame(gameId) {
+  const index = games.findIndex(game => game.id === gameId)
+  games.splice(index, 1)
 }
 
 // clientId is secret, do not share to other clients
@@ -67,5 +72,6 @@ function _authenticate(clientId) {
 module.exports = {
   getGameById,
   createGame,
+  destroyGame,
   setupClient,
 }
