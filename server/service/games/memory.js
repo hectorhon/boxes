@@ -42,9 +42,8 @@ function setupClient({ clientId, nickname, gameId, socket }) {
     game.tryPlayerSelectCard(thisPlayerId, id)
   })
 
-  game.on('playerSelectedCard', ({ playerId, cardId }) => {
+  game.on('playerSelectedCard', ({ playerId, cardId, cardValue }) => {
     if (playerId === thisPlayerId) {
-      const cardValue = game.getCardValue(cardId)
       socket.emit('selfSelectedCard', {
         id: cardId,
         value: cardValue,
@@ -55,6 +54,18 @@ function setupClient({ clientId, nickname, gameId, socket }) {
         cardId,
       })
     }
+  })
+
+  game.on('playerSelectCardFailed', ({ playerId, cardId }) => {
+    socket.emit('playerSelectCardFailed', { playerId, cardId })
+  })
+
+  game.on('playerDeselectedCard', ({ playerId, cardId }) => {
+    socket.emit('playerDeselectedCard', { playerId, cardId })
+  })
+
+  game.on('matchFound', ({ playerId, cardIds, cardValue }) => {
+    socket.emit('matchFound', { playerId, cardIds, cardValue })
   })
 
   game.addPlayer(thisPlayerId, nickname)

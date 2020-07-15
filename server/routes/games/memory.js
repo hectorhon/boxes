@@ -32,7 +32,7 @@ router.get('/games/memory', (req, res) => {
     const newGame = memoryGameService.createGame({
       numPairs: 5
     })
-    res.redirect(`/games/memory?gameId=${newGame.id}&nickname=${encodeURIComponent(nickname)}`)
+    res.redirect(`/games/memory?gameId=${newGame}&nickname=${encodeURIComponent(nickname)}`)
   } else {
     const game = memoryGameService.getGameById(gameId)
     if (!game) {

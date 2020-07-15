@@ -123,3 +123,15 @@ socket.on('playerJoined', ({ id, nickname }) => {
 socket.on('selfSelectedCard', ({ id: cardId, value: cardValue }) => {
   client.revealSelfSelectedCard(cardId, cardValue)
 })
+
+socket.on('playerSelectedCard', ({ playerId, cardId }) => {
+})
+
+socket.on('playerSelectCardFailed', ({ playerId, cardId }) => {
+})
+
+socket.on('playerDeselectedCard', ({ playerId, cardId }) => {
+})
+
+socket.on('matchFound', ({ playerId, cardIds, cardValue }) => {
+})
