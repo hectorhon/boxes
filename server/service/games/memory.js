@@ -1,5 +1,5 @@
 const uuid = require('uuid')
-const Game = require('../../games/memory')
+const Game = require('../../games/memory/core')
 
 const games = []
 const clientIdToPlayerIdMapping = {}

@@ -5,7 +5,7 @@ module.exports = {
     'ExtendedSelect': './widgets/extended-select/extended-select.jsx',
     'ImageGallery': './widgets/image-gallery/image-gallery.jsx',
     'ImageViewer': './widgets/image-gallery/image-viewer.jsx',
-    'MemoryGame': './games/memory-client.js',
+    'MemoryGame': './games/memory/client.js',
   },
   output: {
     filename: '[name].js',

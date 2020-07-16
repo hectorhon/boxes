@@ -6,7 +6,7 @@ const uuid = require('uuid')
 chai.use(sinonChai)
 const expect = chai.expect
 
-const service = require('../../service/games/memory')
+const service = require('../../../service/games/memory')
 
 const gameOptions = {
   numPairs: 5

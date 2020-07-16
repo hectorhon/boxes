@@ -5,8 +5,7 @@ const uuid = require('uuid')
 
 chai.use(sinonChai)
 const expect = chai.expect
-
-const MemoryGame = require('../../games/memory')
+const MemoryGame = require('../../../games/memory/core')
 
 function getPlayerSelectedCardIds(game, playerId) {
   const player = game.players.find(player => player.id === playerId)
