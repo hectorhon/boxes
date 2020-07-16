@@ -83,7 +83,26 @@ describe('Memory game service', () => {
         socket: socket1,
       })
       expect(addPlayer).to.have.been.calledOnce
-      expect(addPlayer.lastCall.lastArg).to.equal(nickname1)
+      expect(addPlayer.lastCall.args[1]).to.equal(nickname1)
+    })
+
+    describe('client has already joined and still connected', () => {
+      it('should emit existingConnection event', () => {
+        service.setupClient({
+          clientId: clientId1,
+          nickname: nickname1,
+          gameId,
+          socket: socket1,
+        })
+        service.setupClient({
+          clientId: clientId1,
+          nickname: nickname1,
+          gameId,
+          socket: socket1,
+        })
+        expect(addPlayer).to.have.been.calledTwice
+        expect(socket1.emit.lastCall.args).to.deep.equal(['existingConnection'])
+      })
     })
 
     it('should use a new playerId for a new client', () => {

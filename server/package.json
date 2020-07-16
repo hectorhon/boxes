@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "webpack --watch & nodemon app.js",
+    "start": "webpack --mode=development --watch & nodemon app.js",
     "test": "nyc --reporter=html --reporter=text mocha"
   },
   "author": "hectorhon",

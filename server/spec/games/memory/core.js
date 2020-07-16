@@ -12,7 +12,7 @@ function getPlayerSelectedCardIds(game, playerId) {
   return player.selectedCards.map(card => card.id)
 }
 
-describe('Memory game', () => {
+describe('Memory game core', () => {
 
   describe('#constructor()', () => {
     let game
@@ -66,16 +66,35 @@ describe('Memory game', () => {
       })
     })
 
-    it("should initialize player state to 'connected'")
-
-    it('should not add player if player has been added', () => {
-      const originalGamePlayersCount = game.players.length
-      game.addPlayer(playerId, playerNickname)
-      expect(game.players).to.have.lengthOf(originalGamePlayersCount)
-      expect(emit).to.have.been.calledOnceWith('playerJoined')
+    it("should initialize player connection state to 'connected'", () => {
+      const player = game.players.find(player => player.id === playerId)
+      expect(player).to.have.property('connectionState', 'connected')
     })
 
-    it('should emit playerReconnected event if player has been added before')
+    describe('player has been added and still connected', () => {
+      it('should not add player', () => {
+        const originalGamePlayersCount = game.players.length
+        game.addPlayer(playerId, playerNickname)
+        expect(game.players).to.have.lengthOf(originalGamePlayersCount)
+        expect(emit).to.have.been.calledOnceWith('playerJoined')
+      })
+
+      it('should call provided callback', () => {
+        const callbackIfExistingConnectedPlayer = sinon.stub()
+        game.addPlayer(playerId, playerNickname, callbackIfExistingConnectedPlayer)
+        expect(callbackIfExistingConnectedPlayer).to.have.been.calledOnce
+      })
+    })
+
+    describe('player has been added but no longer connected', () => {
+      it('should emit playerReconnected event')
+    })
+  })
+
+  describe('#removePlayer()', () => {
+    it("should set player connection state to 'disconnected'")
+
+    it('should emit playerDisconnected event')
   })
 
   describe('#tryPlayerSelectCard()', () => {

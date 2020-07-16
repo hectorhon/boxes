@@ -68,7 +68,9 @@ function setupClient({ clientId, nickname, gameId, socket }) {
     socket.emit('matchFound', { playerId, cardIds, cardValue })
   })
 
-  game.addPlayer(thisPlayerId, nickname)
+  game.addPlayer(thisPlayerId, nickname, () => {
+    socket.emit('existingConnection')
+  })
 }
 
 function _authenticate(clientId) {

@@ -17,10 +17,12 @@ class Player {
   id
   nickname
   selectedCards = []
+  connectionState
 
   constructor(id, nickname) {
     this.id = id
     this.nickname = nickname
+    this.connectionState = 'connected'
   }
 }
 
@@ -41,9 +43,12 @@ class Game extends EventEmitter {
     }
   }
 
-  addPlayer(id, nickname) {
+  addPlayer(id, nickname, callbackIfExistingConnectedPlayer) {
     let player = this.players.find(player => player.id === id)
     if (player) {
+      if (player.connectionState === 'connected') {
+        callbackIfExistingConnectedPlayer && callbackIfExistingConnectedPlayer()
+      }
       return
     }
     player = new Player(id, nickname)
