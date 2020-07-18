@@ -10,6 +10,7 @@
   "author": "hectorhon",
   "license": "UNLICENSED",
   "dependencies": {
+    "bunyan": "^1.8.14",
     "classnames": "^2.2.6",
     "cookie-parser": "^1.4.5",
     "ejs": "^3.1.3",
