@@ -1,4 +1,10 @@
 class Client {
+  static INITIAL_CARD_COLOR = 0x800080
+  static SELF_SELECTED_CARD_COLOR = 0xFF0000
+  static OTHERS_SELECTED_CARD_COLOR = 0x0000FF
+  static SELF_MATCHED_CARD_COLOR = 0xFFA500
+  static OTHERS_MATCHED_CARD_COLOR = 0x87CEEB
+
   socket
   players
   cards
@@ -13,6 +19,8 @@ class Client {
     container.appendChild(this.app.view)
 
     this._drawCardSprites()
+
+    // TODO: highlight other player selected cards
   }
 
   revealSelfSelectedCard(cardId, cardValue) {
@@ -20,12 +28,22 @@ class Client {
     const { x, y, width, height } = card.spriteData
     const { rectangle } = card.sprites
     rectangle.clear()
-    rectangle.beginFill(0x0000FF)
+    rectangle.beginFill(Client.SELF_SELECTED_CARD_COLOR)
     rectangle.drawRect(x, y, width, height)
     rectangle.endFill()
 
     card.sprites.text = this._createCardText(card, cardValue)
     this.app.stage.addChild(card.sprites.text)
+  }
+
+  highlightOtherPlayerSelectedCard(cardId, playerId) {
+    const card = this.cards.find(card => card.id === cardId)
+    const { x, y, width, height } = card.spriteData
+    const { rectangle } = card.sprites
+    rectangle.clear()
+    rectangle.beginFill(Client.OTHERS_SELECTED_CARD_COLOR)
+    rectangle.drawRect(x, y, width, height)
+    rectangle.endFill()
   }
 
   _drawCardSprites() {
@@ -58,7 +76,7 @@ class Client {
       card
     }
 
-    rectangle.beginFill(0xFF0000)
+    rectangle.beginFill(Client.INITIAL_CARD_COLOR)
     rectangle.drawRect(x, y, width, height)
     rectangle.endFill()
 
@@ -116,6 +134,9 @@ socket.on('selfJoined', ({ gameState }) => {
   client = new Client(socket, gameState)
 })
 
+socket.on('existingConnection', () => {
+})
+
 socket.on('playerJoined', ({ id, nickname }) => {
   console.log(`Player ${nickname} (id: ${id}) joined the game`)
 })
@@ -124,7 +145,8 @@ socket.on('selfSelectedCard', ({ id: cardId, value: cardValue }) => {
   client.revealSelfSelectedCard(cardId, cardValue)
 })
 
-socket.on('playerSelectedCard', ({ playerId, cardId }) => {
+socket.on('otherPlayerSelectedCard', ({ playerId, cardId }) => {
+  client.highlightOtherPlayerSelectedCard(cardId, playerId)
 })
 
 socket.on('playerSelectCardFailed', ({ playerId, cardId }) => {

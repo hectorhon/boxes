@@ -1,8 +1,10 @@
 const chai = require('chai')
+// const chaiThings = require('chai-things')
 const sinon = require('sinon')
 const sinonChai = require('sinon-chai')
 const uuid = require('uuid')
 
+// chai.use(chaiThings)
 chai.use(sinonChai)
 const expect = chai.expect
 const MemoryGame = require('../../../games/memory/core')
@@ -304,6 +306,30 @@ describe('Memory game core', () => {
       const player1State = game.getStateForPlayer(player1Id);
       [card1a.id, card1b.id, card2a.id, card2b.id].forEach(matchedCardId => {
         expect(player1State.cards.find(card => card.id === matchedCardId).value).to.be.a('number')
+      })
+    })
+
+    it('should return id of player that selected the card (if any) for every card', () => {
+      const player1State = game.getStateForPlayer(player1Id)
+      player1State.cards.forEach(card => {
+        if (card.id === card3.id) {
+          expect(card.selectedBy).to.equal(player1Id)
+        } else if (card.id === card4.id) {
+          expect(card.selectedBy).to.equal(player2Id)
+        } else {
+          expect(card.selectedBy).to.not.be.ok
+        }
+      })
+    })
+
+    it('should return list of card ids selected by all players', () => {
+      const player1State = game.getStateForPlayer(player1Id)
+      player1State.players.forEach(player => {
+        if (player.id === player1Id) {
+          expect(player.selectedCards).to.deep.equal([card3.id])
+        } else if (player.id === player2Id) {
+          expect(player.selectedCards).to.deep.equal([card4.id])
+        }
       })
     })
   })

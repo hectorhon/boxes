@@ -92,31 +92,22 @@ class Game extends EventEmitter {
   getStateForPlayer(playerId) {
     const player = this.players.find(player => player.id === playerId)
     return {
-      players: this.players.map(player => {
-        if (player.id === playerId) {
-          return {
-            id: player.id,
-            nickname: player.nickname,
-            selectedCards: player.selectedCards,
-          }
-        } else {
-          return  {
-            id: player.id,
-            nickname: player.nickname,
-          }
-        }
-      }),
+      players: this.players.map(player => ({
+        id: player.id,
+        nickname: player.nickname,
+        selectedCards: player.selectedCards.map(card => card.id),
+      })),
       cards: this.cards.map(card => {
         if (card.isMatched || player.selectedCards.indexOf(card) >= 0) {
           return {
             id: card.id,
             value: card.value,
-            selectedBy: card.selectedBy,
+            selectedBy: card.selectedBy && card.selectedBy.id,
           }
         } else {
           return {
             id: card.id,
-            selectedBy: card.selectedBy,
+            selectedBy: card.selectedBy && card.selectedBy.id,
           }
         }
       })

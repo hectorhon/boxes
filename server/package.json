@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "webpack --mode=development --watch & nodemon app.js",
-    "test": "nyc --reporter=html --reporter=text mocha"
+    "start": "webpack --mode=development --watch & nodemon app.js | npx bunyan --output short --no-color",
+    "test": "NODE_ENV=test nyc --reporter=html --reporter=text mocha"
   },
   "author": "hectorhon",
   "license": "UNLICENSED",

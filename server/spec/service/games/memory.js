@@ -87,7 +87,7 @@ describe('Memory game service', () => {
     })
 
     describe('client has already joined and still connected', () => {
-      it('should emit existingConnection event', () => {
+      it('should emit existingConnection event to this player', () => {
         service.setupClient({
           clientId: clientId1,
           nickname: nickname1,
@@ -232,7 +232,7 @@ describe('Memory game service', () => {
           cardId: someCardId,
           cardValue: someCardValue,
         })
-        expect(socket1.emit.lastCall.args).to.deep.equal(['playerSelectedCard', {
+        expect(socket1.emit.lastCall.args).to.deep.equal(['otherPlayerSelectedCard', {
           playerId: somePlayerId,
           cardId: someCardId,
         }])

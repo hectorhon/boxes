@@ -1,3 +1,6 @@
 {
-  "ignore": ["static/dist/*"]
+  "ignore": [
+    "static/dist/*",
+    "spec/*"
+  ]
 }

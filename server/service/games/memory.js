@@ -1,6 +1,8 @@
 const uuid = require('uuid')
+const logger = require('../../logger')
 const Game = require('../../games/memory/core')
 
+const log = logger.child({ component: 'service/games/memory' })
 const games = []
 const clientIdToPlayerIdMapping = {}
 
@@ -21,8 +23,11 @@ function destroyGame(gameId) {
 
 // clientId is secret, do not share to other clients
 function setupClient({ clientId, nickname, gameId, socket }) {
+  log.info({ clientId, gameId }, 'Setting up client')
   const game = getGameById(gameId)
+
   const thisPlayerId = _authenticate(clientId)
+  log.info({ clientId, playerId: thisPlayerId }, 'Mapped clientId to playerId')
 
   game.on('playerJoined', ({ id: playerId, nickname }) => {
     if (playerId === thisPlayerId) {
@@ -49,7 +54,7 @@ function setupClient({ clientId, nickname, gameId, socket }) {
         value: cardValue,
       })
     } else {
-      socket.emit('playerSelectedCard', {
+      socket.emit('otherPlayerSelectedCard', {
         playerId,
         cardId,
       })
