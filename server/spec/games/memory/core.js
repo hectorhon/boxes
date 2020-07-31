@@ -78,7 +78,7 @@ describe('Memory game core', () => {
         const originalGamePlayersCount = game.players.length
         game.addPlayer(playerId, playerNickname)
         expect(game.players).to.have.lengthOf(originalGamePlayersCount)
-        expect(emit).to.have.been.calledOnceWith('playerJoined')
+        expect(emit).to.have.been.calledOnceWith('playerJoined')  // from the addPlayer call
       })
 
       it('should call provided callback', () => {
@@ -89,14 +89,42 @@ describe('Memory game core', () => {
     })
 
     describe('player has been added but no longer connected', () => {
-      it('should emit playerReconnected event')
+      beforeEach(() => {
+        game.handlePlayerDisconnected(playerId)
+        game.addPlayer(playerId, playerNickname)
+      })
+
+      it('should emit playerReconnected event', () => {
+        expect(emit.lastCall.args[0]).to.equal('playerReconnected')
+        expect(emit.lastCall.args[1]).to.deep.equal({ id: playerId })
+      })
+
+      it('should change nickname')
     })
   })
 
-  describe('#removePlayer()', () => {
-    it("should set player connection state to 'disconnected'")
+  describe('#handlePlayerDisconnected', () => {
+    let game, emit
+    const playerId = uuid.v4()
+    const playerNickname = 'james'
 
-    it('should emit playerDisconnected event')
+    beforeEach(() => {
+      game = new MemoryGame({ numPairs: 5 })
+      game.addPlayer(playerId, playerNickname)
+      emit = sinon.spy(game, 'emit')
+      game.handlePlayerDisconnected(playerId)
+    })
+
+    it("should set player connection state to 'disconnected'", () => {
+      const player = game.players.find(player => player.id === playerId)
+      expect(player).to.have.property('connectionState', 'disconnected')
+    })
+
+    it('should emit playerDisconnected event', () => {
+      expect(emit).to.have.been.calledOnce
+      expect(emit.lastCall.args[0]).to.equal('playerDisconnected')
+      expect(emit.lastCall.args[1]).to.deep.equal({ id: playerId })
+    })
   })
 
   describe('#tryPlayerSelectCard()', () => {

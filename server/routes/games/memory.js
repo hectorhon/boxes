@@ -1,5 +1,7 @@
 const express = require('express')
 const uuid = require('uuid')
+const cors = require('cors')
+
 const memoryGameService = require('../../service/games/memory')
 
 const router = express.Router()
@@ -29,10 +31,10 @@ router.get('/games/memory', (req, res) => {
     res.cookie('clientId', clientId)
   }
   if (!gameId) {
-    const newGame = memoryGameService.createGame({
+    const newGameId = memoryGameService.createGame({
       numPairs: 5
     })
-    res.redirect(`/games/memory?gameId=${newGame}&nickname=${encodeURIComponent(nickname)}`)
+    res.redirect(`/games/memory?gameId=${newGameId}&nickname=${encodeURIComponent(nickname)}`)
   } else {
     const game = memoryGameService.getGameById(gameId)
     if (!game) {
@@ -49,6 +51,15 @@ router.get('/games/memory', (req, res) => {
       })
     }
   }
+})
+
+router.post('/games/memory/create', cors({ origin: 'http://localhost:3001' }), (_, res) => {
+  const newGameId = memoryGameService.createGame({
+    numPairs: 5
+  })
+  res.status(200).json({
+    gameId: newGameId
+  })
 })
 
 module.exports = function(io) {

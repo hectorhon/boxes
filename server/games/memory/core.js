@@ -48,6 +48,12 @@ class Game extends EventEmitter {
     if (player) {
       if (player.connectionState === 'connected') {
         callbackIfExistingConnectedPlayer && callbackIfExistingConnectedPlayer()
+      } else if (player.connectionState === 'disconnected') {
+        // Player has reconnected after being disconnected
+        player.connectionState = 'connected'
+        this.emit('playerReconnected', {
+          id: player.id
+        })
       }
       return
     }
@@ -56,6 +62,14 @@ class Game extends EventEmitter {
     this.emit('playerJoined', {
       id: player.id,
       nickname: player.nickname,
+    })
+  }
+
+  handlePlayerDisconnected(playerId) {
+    const player = this.players.find(player => player.id === playerId)
+    player.connectionState = 'disconnected'
+    this.emit('playerDisconnected', {
+      id: playerId
     })
   }
 

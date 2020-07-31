@@ -1,0 +1,25 @@
+.play-area {
+    background-color: black;
+    width: 600px;
+    height: 480px;
+}
+
+/* To avoid margin collapsing for children in play area */
+.play-area:before, .play-area:after {
+    content: ' ';
+    display: table;
+}
+
+.card-area {
+    padding: 20px;
+    display: grid;
+    grid-row-gap: 20px;
+    grid-column-gap: 20px;
+    grid-template-columns: repeat(5, 50px);
+}
+
+.card {
+    background-color: purple;
+    width: 50px;
+    height: 80px;
+}

@@ -153,7 +153,8 @@ describe('Memory game service', () => {
         const playerId1 = addPlayer.firstCall.firstArg
         const gameState = game.getStateForPlayer(playerId1)
         expect(socket1.emit.firstCall.args).to.deep.equal(['selfJoined', {
-          gameState
+          playerId: playerId1,  // needed so that player knows own playerId
+          gameState,
         }])
       })
 

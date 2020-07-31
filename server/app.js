@@ -4,7 +4,7 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const sassMiddleware = require('node-sass-middleware')
 const path = require('path')
-const socketio = require('socket.io')
+const SocketIoServer = require('socket.io')
 
 const config = require('./config')
 const contactsRouter = require('./routes/contacts')
@@ -53,7 +53,9 @@ app.use(thumbnailsRouter)
 app.use('/filestore', express.static(config.FILESTORE_PATH))
 
 const server = http.createServer(app)
-const io = socketio(server)
+const io = new SocketIoServer(server, {
+  origins: 'localhost:3001',
+})
 app.use(chatRouter(io.of('/chat')))
 app.use(gamesRouter(io))
 
